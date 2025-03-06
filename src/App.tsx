@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { 
-  Building, 
-  BarChart3, 
-  Package, 
-  FileText, 
-  User, 
-  Settings, 
+import React, { useState } from "react";
+import {
+  Building,
+  BarChart3,
+  Package,
+  FileText,
+  User,
+  Settings,
   LogOut,
   Search,
   Plus,
@@ -13,42 +13,46 @@ import {
   FileDown,
   ChevronDown,
   Menu,
-  X
-} from 'lucide-react';
-import Login from './components/Login';
-import Dashboard from './pages/Dashboard';
-import AssetManagement from './pages/AssetManagement';
-import MBPSection from './pages/MBPSection';
-import Reports from './pages/Reports';
-import UserProfile from './pages/UserProfile';
-import AdminPanel from './pages/AdminPanel';
+  X,
+} from "lucide-react";
+import Login from "./components/Login";
+import Registration from "./components/Registration";
+import Dashboard from "./pages/Dashboard";
+import AssetManagement from "./pages/AssetManagement";
+import MBPSection from "./pages/MBPSection";
+import Reports from "./pages/Reports";
+import UserProfile from "./pages/UserProfile";
+import AdminPanel from "./pages/AdminPanel";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [activePage, setActivePage] = useState('dashboard');
+  const [showRegistration, setShowRegistration] = useState(false);
+  const [activePage, setActivePage] = useState("dashboard");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogin = () => {
     setIsAuthenticated(true);
+    setShowRegistration(false);
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setShowRegistration(false);
   };
 
   const renderPage = () => {
     switch (activePage) {
-      case 'dashboard':
+      case "dashboard":
         return <Dashboard />;
-      case 'assets':
+      case "assets":
         return <AssetManagement />;
-      case 'mbp':
+      case "mbp":
         return <MBPSection />;
-      case 'reports':
+      case "reports":
         return <Reports />;
-      case 'profile':
+      case "profile":
         return <UserProfile />;
-      case 'admin':
+      case "admin":
         return <AdminPanel />;
       default:
         return <Dashboard />;
@@ -56,7 +60,15 @@ function App() {
   };
 
   if (!isAuthenticated) {
-    return <Login onLogin={handleLogin} />;
+    if (showRegistration) {
+      return <Registration onLogin={handleLogin} />;
+    }
+    return (
+      <Login
+        onLogin={handleLogin}
+        onRegister={() => setShowRegistration(true)}
+      />
+    );
   }
 
   return (
@@ -64,16 +76,20 @@ function App() {
       {/* Desktop Sidebar */}
       <div className="hidden md:flex md:flex-col md:w-64 bg-white shadow-md">
         <div className="p-4 border-b border-gray-200">
-          <h1 className="text-xl font-semibold text-[#2A5F7F]">Asset Manager</h1>
+          <h1 className="text-xl font-semibold text-[#2A5F7F]">
+            Asset Manager
+          </h1>
           <p className="text-sm text-gray-500">College Admin System</p>
         </div>
         <nav className="flex-1 overflow-y-auto p-4">
           <ul className="space-y-2">
             <li>
               <button
-                onClick={() => setActivePage('dashboard')}
+                onClick={() => setActivePage("dashboard")}
                 className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                  activePage === 'dashboard' ? 'bg-[#2A5F7F] text-white hover:bg-[#1e4b63]' : ''
+                  activePage === "dashboard"
+                    ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
+                    : ""
                 }`}
               >
                 <BarChart3 className="mr-3 h-5 w-5" />
@@ -82,9 +98,11 @@ function App() {
             </li>
             <li>
               <button
-                onClick={() => setActivePage('assets')}
+                onClick={() => setActivePage("assets")}
                 className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                  activePage === 'assets' ? 'bg-[#2A5F7F] text-white hover:bg-[#1e4b63]' : ''
+                  activePage === "assets"
+                    ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
+                    : ""
                 }`}
               >
                 <Building className="mr-3 h-5 w-5" />
@@ -93,9 +111,11 @@ function App() {
             </li>
             <li>
               <button
-                onClick={() => setActivePage('mbp')}
+                onClick={() => setActivePage("mbp")}
                 className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                  activePage === 'mbp' ? 'bg-[#2A5F7F] text-white hover:bg-[#1e4b63]' : ''
+                  activePage === "mbp"
+                    ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
+                    : ""
                 }`}
               >
                 <Package className="mr-3 h-5 w-5" />
@@ -104,9 +124,11 @@ function App() {
             </li>
             <li>
               <button
-                onClick={() => setActivePage('reports')}
+                onClick={() => setActivePage("reports")}
                 className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                  activePage === 'reports' ? 'bg-[#2A5F7F] text-white hover:bg-[#1e4b63]' : ''
+                  activePage === "reports"
+                    ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
+                    : ""
                 }`}
               >
                 <FileText className="mr-3 h-5 w-5" />
@@ -115,9 +137,11 @@ function App() {
             </li>
             <li>
               <button
-                onClick={() => setActivePage('profile')}
+                onClick={() => setActivePage("profile")}
                 className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                  activePage === 'profile' ? 'bg-[#2A5F7F] text-white hover:bg-[#1e4b63]' : ''
+                  activePage === "profile"
+                    ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
+                    : ""
                 }`}
               >
                 <User className="mr-3 h-5 w-5" />
@@ -126,9 +150,11 @@ function App() {
             </li>
             <li>
               <button
-                onClick={() => setActivePage('admin')}
+                onClick={() => setActivePage("admin")}
                 className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                  activePage === 'admin' ? 'bg-[#2A5F7F] text-white hover:bg-[#1e4b63]' : ''
+                  activePage === "admin"
+                    ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
+                    : ""
                 }`}
               >
                 <Settings className="mr-3 h-5 w-5" />
@@ -155,7 +181,11 @@ function App() {
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="p-2 rounded-lg hover:bg-gray-100"
         >
-          {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          {isMobileMenuOpen ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <Menu className="h-6 w-6" />
+          )}
         </button>
       </div>
 
@@ -167,11 +197,13 @@ function App() {
               <li>
                 <button
                   onClick={() => {
-                    setActivePage('dashboard');
+                    setActivePage("dashboard");
                     setIsMobileMenuOpen(false);
                   }}
                   className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                    activePage === 'dashboard' ? 'bg-[#2A5F7F] text-white hover:bg-[#1e4b63]' : ''
+                    activePage === "dashboard"
+                      ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
+                      : ""
                   }`}
                 >
                   <BarChart3 className="mr-3 h-5 w-5" />
@@ -181,11 +213,13 @@ function App() {
               <li>
                 <button
                   onClick={() => {
-                    setActivePage('assets');
+                    setActivePage("assets");
                     setIsMobileMenuOpen(false);
                   }}
                   className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                    activePage === 'assets' ? 'bg-[#2A5F7F] text-white hover:bg-[#1e4b63]' : ''
+                    activePage === "assets"
+                      ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
+                      : ""
                   }`}
                 >
                   <Building className="mr-3 h-5 w-5" />
@@ -195,11 +229,13 @@ function App() {
               <li>
                 <button
                   onClick={() => {
-                    setActivePage('mbp');
+                    setActivePage("mbp");
                     setIsMobileMenuOpen(false);
                   }}
                   className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                    activePage === 'mbp' ? 'bg-[#2A5F7F] text-white hover:bg-[#1e4b63]' : ''
+                    activePage === "mbp"
+                      ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
+                      : ""
                   }`}
                 >
                   <Package className="mr-3 h-5 w-5" />
@@ -209,11 +245,13 @@ function App() {
               <li>
                 <button
                   onClick={() => {
-                    setActivePage('reports');
+                    setActivePage("reports");
                     setIsMobileMenuOpen(false);
                   }}
                   className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                    activePage === 'reports' ? 'bg-[#2A5F7F] text-white hover:bg-[#1e4b63]' : ''
+                    activePage === "reports"
+                      ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
+                      : ""
                   }`}
                 >
                   <FileText className="mr-3 h-5 w-5" />
@@ -223,11 +261,13 @@ function App() {
               <li>
                 <button
                   onClick={() => {
-                    setActivePage('profile');
+                    setActivePage("profile");
                     setIsMobileMenuOpen(false);
                   }}
                   className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                    activePage === 'profile' ? 'bg-[#2A5F7F] text-white hover:bg-[#1e4b63]' : ''
+                    activePage === "profile"
+                      ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
+                      : ""
                   }`}
                 >
                   <User className="mr-3 h-5 w-5" />
@@ -237,11 +277,13 @@ function App() {
               <li>
                 <button
                   onClick={() => {
-                    setActivePage('admin');
+                    setActivePage("admin");
                     setIsMobileMenuOpen(false);
                   }}
                   className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                    activePage === 'admin' ? 'bg-[#2A5F7F] text-white hover:bg-[#1e4b63]' : ''
+                    activePage === "admin"
+                      ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
+                      : ""
                   }`}
                 >
                   <Settings className="mr-3 h-5 w-5" />
