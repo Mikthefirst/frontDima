@@ -30,15 +30,41 @@ const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
     { id: "202", buildingId: "2", name: "Lab 202" },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
-    // In a real app, you would send this data to your backend
-    console.log("Registration data:", formData);
-    onLogin();
+  const handleSubmit = async (e: React.FormEvent) => {
+    // e.preventDefault();
+    // if (formData.password !== formData.confirmPassword) {
+    //   alert("Passwords do not match");
+    //   return;
+    // }
+    // // In a real app, you would send this data to your backend
+      // console.log("Registration data:", formData);
+      
+
+        e.preventDefault();
+
+        if (formData.password !== formData.confirmPassword) {
+          alert("Passwords do not match");
+          return;
+        }
+    console.log(formData);
+        try {
+          const response = await fetch("http://localhost:3000/user", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          });
+
+          if (!response.ok) throw new Error("Registration failed");
+
+          alert("Registration successful!");
+          onLogin();
+        } catch (error) {
+          console.error("Error:", error);
+          alert("Error registering user");
+        }
+    //onLogin();
   };
 
   const handleChange = (

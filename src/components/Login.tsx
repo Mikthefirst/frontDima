@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { User, Lock } from "lucide-react";
 
+
 interface LoginProps {
   onLogin: () => void;
   onRegister: () => void;
@@ -9,11 +10,39 @@ interface LoginProps {
 const Login: React.FC<LoginProps> = ({ onLogin, onRegister }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, you would validate credentials here
-    onLogin();
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:3000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: username,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+
+      // Если успешный логин
+      onLogin();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -84,14 +113,23 @@ const Login: React.FC<LoginProps> = ({ onLogin, onRegister }) => {
                 />
               </div>
             </div>
-            <div>
-              <button
-                type="submit"
-                className="w-full bg-[#2A5F7F] text-white py-2 px-4 rounded-md hover:bg-[#1e4b63] focus:outline-none focus:ring-2 focus:ring-[#2A5F7F] focus:ring-opacity-50 transition-colors"
-              >
-                Login
-              </button>
-            </div>
+            {/* Добавляем отображение ошибки */}
+            {error && (
+              <div className="mb-4 text-red-600 text-sm text-center">
+                {error}
+              </div>
+            )}
+
+            {/* Модифицируем кнопку для отображения состояния загрузки */}
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full bg-[#2A5F7F] text-white py-2 px-4 rounded-md hover:bg-[#1e4b63] focus:outline-none focus:ring-2 focus:ring-[#2A5F7F] focus:ring-opacity-50 transition-colors ${
+                loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              {loading ? "Logging in..." : "Login"}
+            </button>
             <div className="text-center mt-4">
               <p className="text-sm text-gray-600">
                 Don't have an account?{" "}
