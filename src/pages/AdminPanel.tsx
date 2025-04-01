@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Building,
   Edit,
@@ -11,13 +11,10 @@ import {
   LayoutGrid,
 } from "lucide-react";
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  assignedRooms: string[];
-}
+import { ApiError, User } from "../types/types";
+
+
+
 
 interface Room {
   id: string;
@@ -36,8 +33,43 @@ const AdminPanel: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedBuildings, setExpandedBuildings] = useState<string[]>([]);
 
+
+    const [users, setUsers] = useState<User[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<ApiError | null>(null);
+  
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+
+        const url = "http://localhost:3000/user";
+
+        const response = await fetch(url, {credentials:'include', method:'GET'});
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log(data)
+        setUsers(data);
+        setError(null);
+      } catch (err) {
+        if(err instanceof Error)
+          setError({ message: err.message });
+        else {
+          setError({message:"An unknown error occurred"});
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
   // Sample data
-  const users: User[] = [
+  /*const users: User[] = [
     {
       id: "1",
       name: "John Smith",
@@ -73,7 +105,7 @@ const AdminPanel: React.FC = () => {
       role: "MBP Manager",
       assignedRooms: ["Storage Room 1", "Storage Room 2"],
     },
-  ];
+  ];*/
 
   const buildings: BuildingType[] = [
     {
@@ -112,9 +144,8 @@ const AdminPanel: React.FC = () => {
 
   const filteredUsers = users.filter((user) => {
     return (
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.role.toLowerCase().includes(searchTerm.toLowerCase())
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.full_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
 
@@ -187,7 +218,10 @@ const AdminPanel: React.FC = () => {
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Name
+                        Nickname
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Fullname
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Email
@@ -209,17 +243,20 @@ const AdminPanel: React.FC = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="flex-shrink-0 h-10 w-10 bg-[#2A5F7F] rounded-full flex items-center justify-center text-white">
-                              {user.name
+                              {user.username
                                 .split(" ")
                                 .map((n) => n[0])
                                 .join("")}
                             </div>
                             <div className="ml-4">
                               <div className="text-sm font-medium text-gray-900">
-                                {user.name}
+                                {user.username}
                               </div>
                             </div>
                           </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">
+                          {user.full_name}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {user.email}
@@ -230,7 +267,7 @@ const AdminPanel: React.FC = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {user.assignedRooms.join(", ")}
+                          {user.room_id}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 space-x-2">
                           <button className="text-blue-600 hover:text-blue-800">
