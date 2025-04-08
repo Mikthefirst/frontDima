@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { User, Mail, Lock, Building, LayoutGrid } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface RegistrationProps {
   onLogin: () => void;
 }
 
 const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
+    const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -48,7 +51,7 @@ const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
         }
     console.log(formData);
         try {
-          const response = await fetch("http://localhost:3000/user", {
+          /*const response = await fetch("http://localhost:3000/user", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -57,9 +60,10 @@ const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
           });
 
           if (!response.ok) throw new Error("Registration failed");
-
+*/
           alert("Registration successful!");
           onLogin();
+          navigate('/main');
         } catch (error) {
           console.error("Error:", error);
           alert("Error registering user");
@@ -305,7 +309,7 @@ const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
                   Already have an account?{" "}
                   <a
                     href="#"
-                    onClick={() => onLogin()}
+                    onClick={() => navigate("/login")}
                     className="text-[#2A5F7F] hover:text-[#1e4b63] font-medium"
                   >
                     Sign in

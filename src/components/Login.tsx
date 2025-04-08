@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { User, Lock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 
 interface LoginProps {
@@ -8,6 +9,8 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin, onRegister }) => {
+    const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -39,6 +42,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onRegister }) => {
 
       // Если успешный логин
       onLogin();
+      navigate("/main");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -135,7 +139,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onRegister }) => {
               <p className="text-sm text-gray-600">
                 Don't have an account?{" "}
                 <button
-                  onClick={onRegister}
+                  onClick={() => navigate("/reg")}
                   className="text-[#2A5F7F] hover:text-[#1e4b63] font-medium"
                 >
                   Register now
