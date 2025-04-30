@@ -16,9 +16,14 @@ export interface User {
 export interface BuildingType {
   id: string;
   name: string;
-  rooms:Array<Room>
+  rooms:Array<Rooms>
 }
-interface Room{
+interface Rooms{
+  id: string;
+  name: string;
+  floor: string;
+}
+export interface Room {
   id: string;
   name: string;
   floor: string;

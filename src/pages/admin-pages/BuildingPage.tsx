@@ -1,6 +1,13 @@
 import React, { useState } from "react";
-import { Building, Edit, Trash2, Plus, ChevronRight, ChevronDown } from "lucide-react";
-import { BuildingType } from "../../types/types";
+import {
+  Building,
+  Edit,
+  Trash2,
+  Plus,
+  ChevronRight,
+  ChevronDown,
+} from "lucide-react";
+import { BuildingType, Room } from "../../types/types";
 
 const BuildingPage: React.FC = () => {
   const [expandedBuildings, setExpandedBuildings] = useState<string[]>([]);
@@ -40,8 +47,22 @@ const BuildingPage: React.FC = () => {
   ]);
   const [isAddBuildingModalOpen, setIsAddBuildingModalOpen] = useState(false);
   const [isAddRoomModalOpen, setIsAddRoomModalOpen] = useState(false);
+  const [isEditRoomModalOpen, setIsEditRoomModalOpen] = useState(false);
+  const [isDeleteRoomModalOpen, setIsDeleteRoomModalOpen] = useState(false);
   const [newBuildingName, setNewBuildingName] = useState("");
-  const [newRoom, setNewRoom] = useState({ name: "", floor: "", buildingId: "" });
+  const [newRoom, setNewRoom] = useState({
+    name: "",
+    floor: "",
+    buildingId: "",
+  });
+  const [editingRoom, setEditingRoom] = useState<{
+    room: Room;
+    buildingId: string;
+  } | null>(null);
+  const [roomToDelete, setRoomToDelete] = useState<{
+    room: Room;
+    buildingId: string;
+  } | null>(null);
 
   const toggleBuilding = (buildingId: string) => {
     if (expandedBuildings.includes(buildingId)) {
@@ -88,6 +109,46 @@ const BuildingPage: React.FC = () => {
     }
   };
 
+  const handleEditRoom = () => {
+    if (!editingRoom) return;
+
+    const updatedBuildings = buildings.map((building) => {
+      if (building.id === editingRoom.buildingId) {
+        return {
+          ...building,
+          rooms: building.rooms.map((room) =>
+            room.id === editingRoom.room.id ? editingRoom.room : room
+          ),
+        };
+      }
+      return building;
+    });
+
+    setBuildings(updatedBuildings);
+    setEditingRoom(null);
+    setIsEditRoomModalOpen(false);
+  };
+
+  const handleDeleteRoom = () => {
+    if (!roomToDelete) return;
+
+    const updatedBuildings = buildings.map((building) => {
+      if (building.id === roomToDelete.buildingId) {
+        return {
+          ...building,
+          rooms: building.rooms.filter(
+            (room) => room.id !== roomToDelete.room.id
+          ),
+        };
+      }
+      return building;
+    });
+
+    setBuildings(updatedBuildings);
+    setRoomToDelete(null);
+    setIsDeleteRoomModalOpen(false);
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -114,19 +175,14 @@ const BuildingPage: React.FC = () => {
 
       <div className="space-y-4">
         {buildings.map((building) => (
-          <div
-            key={building.id}
-            className="border rounded-lg overflow-hidden"
-          >
+          <div key={building.id} className="border rounded-lg overflow-hidden">
             <div
               className="bg-gray-50 px-4 py-3 flex justify-between items-center cursor-pointer"
               onClick={() => toggleBuilding(building.id)}
             >
               <div className="flex items-center">
                 <Building className="h-5 w-5 text-[#2A5F7F] mr-2" />
-                <h3 className="font-medium text-gray-800">
-                  {building.name}
-                </h3>
+                <h3 className="font-medium text-gray-800">{building.name}</h3>
                 <span className="ml-2 text-sm text-gray-500">
                   ({building.rooms.length} rooms)
                 </span>
@@ -164,10 +220,28 @@ const BuildingPage: React.FC = () => {
                           {room.floor}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 space-x-2">
-                          <button className="text-blue-600 hover:text-blue-800">
+                          <button
+                            onClick={() => {
+                              setEditingRoom({
+                                room: { ...room },
+                                buildingId: building.id,
+                              });
+                              setIsEditRoomModalOpen(true);
+                            }}
+                            className="text-blue-600 hover:text-blue-800"
+                          >
                             <Edit className="h-5 w-5" />
                           </button>
-                          <button className="text-red-600 hover:text-red-800">
+                          <button
+                            onClick={() => {
+                              setRoomToDelete({
+                                room,
+                                buildingId: building.id,
+                              });
+                              setIsDeleteRoomModalOpen(true);
+                            }}
+                            className="text-red-600 hover:text-red-800"
+                          >
                             <Trash2 className="h-5 w-5" />
                           </button>
                         </td>
@@ -282,6 +356,90 @@ const BuildingPage: React.FC = () => {
                 className="px-4 py-2 bg-[#2A5F7F] text-white rounded-md hover:bg-[#1e4b63]"
               >
                 Add Room
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Room Modal */}
+      {isEditRoomModalOpen && editingRoom && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-lg font-medium mb-4">Edit Room</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Room Name
+                </label>
+                <input
+                  type="text"
+                  value={editingRoom.room.name}
+                  onChange={(e) =>
+                    setEditingRoom({
+                      ...editingRoom,
+                      room: { ...editingRoom.room, name: e.target.value },
+                    })
+                  }
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2A5F7F]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Floor
+                </label>
+                <input
+                  type="text"
+                  value={editingRoom.room.floor}
+                  onChange={(e) =>
+                    setEditingRoom({
+                      ...editingRoom,
+                      room: { ...editingRoom.room, floor: e.target.value },
+                    })
+                  }
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2A5F7F]"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => setIsEditRoomModalOpen(false)}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleEditRoom}
+                className="px-4 py-2 bg-[#2A5F7F] text-white rounded-md hover:bg-[#1e4b63]"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Room Confirmation Modal */}
+      {isDeleteRoomModalOpen && roomToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-lg font-medium mb-4">Delete Room</h3>
+            <p className="mb-6">
+              Are you sure you want to delete {roomToDelete.room.name}? This
+              action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setIsDeleteRoomModalOpen(false)}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteRoom}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+              >
+                Delete Room
               </button>
             </div>
           </div>
