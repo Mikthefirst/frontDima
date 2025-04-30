@@ -13,6 +13,16 @@ export interface User {
   room_id: string;
 }
 
+export interface BuildingType {
+  id: string;
+  name: string;
+  rooms:Array<Room>
+}
+interface Room{
+  id: string;
+  name: string;
+  floor: string;
+}
 /*
     "id": "5de94ab1-6da1-4221-b813-74584fec1b32",
         "username": "Nick123",
