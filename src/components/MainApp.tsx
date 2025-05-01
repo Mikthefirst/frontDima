@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 
 import {
   Building,
@@ -8,13 +8,6 @@ import {
   User,
   Settings,
   LogOut,
-  Search,
-  Plus,
-  AlertTriangle,
-  FileDown,
-  ChevronDown,
-  Menu,
-  X,
 } from "lucide-react";
 
 
@@ -29,7 +22,6 @@ import { useNavigate } from "react-router-dom";
 export default function MainApp() {
   const navigate = useNavigate();
   const [activePage, setActivePage] = useState("dashboard");
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const renderPage = () => {
     switch (activePage) {
@@ -152,136 +144,6 @@ export default function MainApp() {
           </button>
         </div>
       </div>
-
-      {/* Mobile Menu Button */}
-      <div className="md:hidden fixed top-0 left-0 right-0 bg-white z-10 shadow-md flex justify-between items-center p-4">
-        <h1 className="text-xl font-semibold text-[#2A5F7F]">Asset Manager</h1>
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-2 rounded-lg hover:bg-gray-100"
-        >
-          {isMobileMenuOpen ? (
-            <X className="h-6 w-6" />
-          ) : (
-            <Menu className="h-6 w-6" />
-          )}
-        </button>
-      </div>
-
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden fixed top-16 left-0 right-0 bottom-0 bg-white z-10 p-4">
-          <nav>
-            <ul className="space-y-2">
-              <li>
-                <button
-                  onClick={() => {
-                    setActivePage("dashboard");
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                    activePage === "dashboard"
-                      ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
-                      : ""
-                  }`}
-                >
-                  <BarChart3 className="mr-3 h-5 w-5" />
-                  Dashboard
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => {
-                    setActivePage("assets");
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                    activePage === "assets"
-                      ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
-                      : ""
-                  }`}
-                >
-                  <Building className="mr-3 h-5 w-5" />
-                  Asset Management
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => {
-                    setActivePage("mbp");
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                    activePage === "mbp"
-                      ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
-                      : ""
-                  }`}
-                >
-                  <Package className="mr-3 h-5 w-5" />
-                  MBP Section
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => {
-                    setActivePage("reports");
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                    activePage === "reports"
-                      ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
-                      : ""
-                  }`}
-                >
-                  <FileText className="mr-3 h-5 w-5" />
-                  Reports
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => {
-                    setActivePage("profile");
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                    activePage === "profile"
-                      ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
-                      : ""
-                  }`}
-                >
-                  <User className="mr-3 h-5 w-5" />
-                  User Profile
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => {
-                    setActivePage("admin");
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
-                    activePage === "admin"
-                      ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
-                      : ""
-                  }`}
-                >
-                  <Settings className="mr-3 h-5 w-5" />
-                  Admin Panel
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={()=>navigate('/main')}
-                  className="flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <LogOut className="mr-3 h-5 w-5" />
-                  Logout
-                </button>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      )}
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">

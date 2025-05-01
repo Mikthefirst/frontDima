@@ -1,10 +1,8 @@
 import React from 'react';
 import { 
   BarChart3, 
-  Package, 
   AlertTriangle, 
   FileText, 
-  Plus, 
   TrendingDown,
   PieChart
 } from 'lucide-react';
@@ -14,16 +12,6 @@ const Dashboard: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
-        <div className="flex space-x-2">
-          <button className="flex items-center bg-[#2A5F7F] text-white px-4 py-2 rounded-md hover:bg-[#1e4b63] transition-colors">
-            <FileText className="mr-2 h-5 w-5" />
-            Create Report
-          </button>
-          <button className="flex items-center bg-[#2A5F7F] text-white px-4 py-2 rounded-md hover:bg-[#1e4b63] transition-colors">
-            <Plus className="mr-2 h-5 w-5" />
-            Add Asset
-          </button>
-        </div>
       </div>
 
       {/* Quick Access Widgets */}

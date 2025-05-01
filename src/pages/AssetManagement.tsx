@@ -7,7 +7,8 @@ import {
   Edit, 
   Trash2,
   X,
-  Upload
+  Upload,
+  AlertTriangle
 } from 'lucide-react';
 
 interface Asset {
@@ -19,16 +20,12 @@ interface Asset {
   depreciation: string;
   purchaseDate: string;
   value: number;
+  description?: string;
 }
 
 const AssetManagement: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterRoom, setFilterRoom] = useState('');
-  const [filterPerson, setFilterPerson] = useState('');
-
   // Sample data
-  const assets: Asset[] = [
+  const initialAssets: Asset[] = [
     {
       id: '1',
       inventoryNo: '01360776',
@@ -37,7 +34,8 @@ const AssetManagement: React.FC = () => {
       responsiblePerson: 'John Smith',
       depreciation: '25%',
       purchaseDate: '2023-01-15',
-      value: 1200
+      value: 1200,
+      description: 'High-performance laptop for design team'
     },
     {
       id: '2',
@@ -47,7 +45,8 @@ const AssetManagement: React.FC = () => {
       responsiblePerson: 'Sarah Johnson',
       depreciation: '30%',
       purchaseDate: '2022-11-05',
-      value: 450
+      value: 450,
+      description: 'Color laser printer for marketing department'
     },
     {
       id: '3',
@@ -57,7 +56,8 @@ const AssetManagement: React.FC = () => {
       responsiblePerson: 'Michael Brown',
       depreciation: '15%',
       purchaseDate: '2023-03-22',
-      value: 650
+      value: 650,
+      description: 'Projector for conference room presentations'
     },
     {
       id: '4',
@@ -67,7 +67,8 @@ const AssetManagement: React.FC = () => {
       responsiblePerson: 'Emily Davis',
       depreciation: '10%',
       purchaseDate: '2022-08-17',
-      value: 800
+      value: 800,
+      description: 'Large oak conference table for meeting room'
     },
     {
       id: '5',
@@ -77,7 +78,8 @@ const AssetManagement: React.FC = () => {
       responsiblePerson: 'John Smith',
       depreciation: '20%',
       purchaseDate: '2023-02-08',
-      value: 250
+      value: 250,
+      description: 'Ergonomic office chair with lumbar support'
     },
     {
       id: '6',
@@ -87,10 +89,31 @@ const AssetManagement: React.FC = () => {
       responsiblePerson: 'Michael Brown',
       depreciation: '5%',
       purchaseDate: '2023-04-10',
-      value: 180
+      value: 180,
+      description: 'Large magnetic whiteboard for team meetings'
     },
   ];
 
+  // State management
+  const [assets, setAssets] = useState<Asset[]>(initialAssets);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterRoom, setFilterRoom] = useState('');
+  const [filterPerson, setFilterPerson] = useState('');
+  const [currentAsset, setCurrentAsset] = useState<Asset | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [assetToDelete, setAssetToDelete] = useState<Asset | null>(null);
+  const [formData, setFormData] = useState<Partial<Asset>>({});
+  const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
+
+  // Handle notifications
+  const showNotification = (message: string, type: 'success' | 'error') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  // Filter assets based on search and filter criteria
   const filteredAssets = assets.filter(asset => {
     const matchesSearch = asset.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           asset.inventoryNo.includes(searchTerm);
@@ -100,16 +123,133 @@ const AssetManagement: React.FC = () => {
     return matchesSearch && matchesRoom && matchesPerson;
   });
 
+  // Get unique values for filter dropdowns
   const uniqueRooms = Array.from(new Set(assets.map(asset => asset.location)));
   const uniquePersons = Array.from(new Set(assets.map(asset => asset.responsiblePerson)));
 
+  // Handle edit button click
+  const handleEditClick = (asset: Asset) => {
+    setCurrentAsset(asset);
+    setFormData({...asset});
+    setIsEditMode(true);
+    setIsModalOpen(true);
+  };
+
+  // Handle delete button click
+  const handleDeleteClick = (asset: Asset) => {
+    setAssetToDelete(asset);
+    setIsDeleteModalOpen(true);
+  };
+
+  // Handle form input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { id, value } = e.target;
+    
+    setFormData({
+      ...formData,
+      [id]: id === 'value' ? parseFloat(value) : value
+    });
+  };
+
+  // Handle add/edit form submission
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      if (isEditMode && currentAsset) {
+        // Update existing asset
+        const updatedAssets = assets.map(asset => 
+          asset.id === currentAsset.id ? { ...asset, ...formData } : asset
+        );
+        setAssets(updatedAssets);
+        showNotification(`Asset ${formData.name} updated successfully`, 'success');
+      } else {
+        // Add new asset
+        const newAsset: Asset = {
+          id: Date.now().toString(), // Generate a new ID
+          inventoryNo: formData.inventoryNo || '',
+          name: formData.name || '',
+          location: formData.location || '',
+          responsiblePerson: formData.responsiblePerson || '',
+          depreciation: formData.depreciation || '0%',
+          purchaseDate: formData.purchaseDate || new Date().toISOString().split('T')[0],
+          value: formData.value || 0,
+          description: formData.description || ''
+        };
+        
+        setAssets([...assets, newAsset]);
+        showNotification(`Asset ${newAsset.name} added successfully`, 'success');
+      }
+      
+      // Reset and close modal
+      setIsModalOpen(false);
+      setFormData({});
+      setCurrentAsset(null);
+      setIsEditMode(false);
+    } catch (error) {
+      showNotification('An error occurred while saving the asset', 'error');
+      console.error('Error saving asset:', error);
+    }
+  };
+
+  // Handle asset deletion confirmation
+  const confirmDelete = () => {
+    if (!assetToDelete) return;
+    
+    try {
+      const updatedAssets = assets.filter(asset => asset.id !== assetToDelete.id);
+      setAssets(updatedAssets);
+      setIsDeleteModalOpen(false);
+      setAssetToDelete(null);
+      showNotification(`Asset ${assetToDelete.name} deleted successfully`, 'success');
+    } catch (error) {
+      showNotification('An error occurred while deleting the asset', 'error');
+      console.error('Error deleting asset:', error);
+    }
+  };
+
+  // Handle modal close
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setFormData({});
+    setCurrentAsset(null);
+    setIsEditMode(false);
+  };
+
+  // Open modal for adding new asset
+  const openAddModal = () => {
+    setIsEditMode(false);
+    setCurrentAsset(null);
+    setFormData({});
+    setIsModalOpen(true);
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6 max-w-[1600px] mx-auto">
+      {/* Notification */}
+      {notification && (
+        <div 
+          className={`fixed top-4 right-4 p-4 rounded-md shadow-lg z-50 max-w-md transition-all duration-300 ease-in-out transform translate-x-0 ${
+            notification.type === 'success' ? 'bg-green-100 text-green-800 border-l-4 border-green-500' : 
+            'bg-red-100 text-red-800 border-l-4 border-red-500'
+          }`}
+        >
+          <div className="flex items-center">
+            {notification.type === 'success' ? (
+              <span className="flex-shrink-0 mr-2">✓</span>
+            ) : (
+              <AlertTriangle className="flex-shrink-0 mr-2 h-5 w-5" />
+            )}
+            <p>{notification.message}</p>
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">Asset Management (UOS)</h1>
         <button 
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center bg-[#2A5F7F] text-white px-4 py-2 rounded-md hover:bg-[#1e4b63] transition-colors"
+          onClick={openAddModal}
+          className="flex items-center bg-[#2A5F7F] text-white px-4 py-2 rounded-md hover:bg-[#1e4b63] transition-colors duration-300 transform hover:scale-105"
         >
           <Plus className="mr-2 h-5 w-5" />
           Add Asset
@@ -197,13 +337,23 @@ const AssetManagement: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{asset.purchaseDate}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${asset.value.toFixed(2)}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{asset.depreciation}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 space-x-2">
-                    <button className="text-blue-600 hover:text-blue-800">
-                      <Edit className="h-5 w-5" />
-                    </button>
-                    <button className="text-red-600 hover:text-red-800">
-                      <Trash2 className="h-5 w-5" />
-                    </button>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <div className="flex space-x-3">
+                      <button 
+                        onClick={() => handleEditClick(asset)} 
+                        className="text-blue-600 hover:text-blue-800 transition-colors duration-200 transform hover:scale-110"
+                        aria-label="Edit asset"
+                      >
+                        <Edit className="h-5 w-5" />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteClick(asset)} 
+                        className="text-red-600 hover:text-red-800 transition-colors duration-200 transform hover:scale-110"
+                        aria-label="Delete asset"
+                      >
+                        <Trash2 className="h-5 w-5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -217,21 +367,23 @@ const AssetManagement: React.FC = () => {
         )}
       </div>
 
-      {/* Add Asset Modal */}
+      {/* Add/Edit Asset Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in-scale">
             <div className="flex justify-between items-center p-6 border-b">
-              <h2 className="text-xl font-semibold text-gray-800">Add New Asset</h2>
+              <h2 className="text-xl font-semibold text-gray-800">
+                {isEditMode ? 'Edit Asset' : 'Add New Asset'}
+              </h2>
               <button 
-                onClick={() => setIsModalOpen(false)}
-                className="text-gray-500 hover:text-gray-700"
+                onClick={handleModalClose}
+                className="text-gray-500 hover:text-gray-700 transition-colors"
               >
                 <X className="h-6 w-6" />
               </button>
             </div>
             <div className="p-6">
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={handleFormSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="inventoryNo" className="block text-sm font-medium text-gray-700 mb-1">
@@ -242,6 +394,9 @@ const AssetManagement: React.FC = () => {
                       id="inventoryNo"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
                       placeholder="e.g., 01360782"
+                      value={formData.inventoryNo || ''}
+                      onChange={handleInputChange}
+                      required
                     />
                   </div>
                   <div>
@@ -253,6 +408,9 @@ const AssetManagement: React.FC = () => {
                       id="name"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
                       placeholder="e.g., Dell XPS 15 Laptop"
+                      value={formData.name || ''}
+                      onChange={handleInputChange}
+                      required
                     />
                   </div>
                 </div>
@@ -265,6 +423,9 @@ const AssetManagement: React.FC = () => {
                     <select
                       id="location"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
+                      value={formData.location || ''}
+                      onChange={handleInputChange}
+                      required
                     >
                       <option value="">Select a room</option>
                       {uniqueRooms.map(room => (
@@ -280,6 +441,9 @@ const AssetManagement: React.FC = () => {
                     <select
                       id="responsiblePerson"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
+                      value={formData.responsiblePerson || ''}
+                      onChange={handleInputChange}
+                      required
                     >
                       <option value="">Select a person</option>
                       {uniquePersons.map(person => (
@@ -290,7 +454,7 @@ const AssetManagement: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label htmlFor="purchaseDate" className="block text-sm font-medium text-gray-700 mb-1">
                       Purchase Date
@@ -299,6 +463,9 @@ const AssetManagement: React.FC = () => {
                       type="date"
                       id="purchaseDate"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
+                      value={formData.purchaseDate || ''}
+                      onChange={handleInputChange}
+                      required
                     />
                   </div>
                   <div>
@@ -312,6 +479,23 @@ const AssetManagement: React.FC = () => {
                       placeholder="e.g., 1200"
                       min="0"
                       step="0.01"
+                      value={formData.value || ''}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="depreciation" className="block text-sm font-medium text-gray-700 mb-1">
+                      Depreciation (%)
+                    </label>
+                    <input
+                      type="text"
+                      id="depreciation"
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
+                      placeholder="e.g., 25%"
+                      value={formData.depreciation || ''}
+                      onChange={handleInputChange}
+                      required
                     />
                   </div>
                 </div>
@@ -325,6 +509,8 @@ const AssetManagement: React.FC = () => {
                     rows={3}
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
                     placeholder="Enter asset description..."
+                    value={formData.description || ''}
+                    onChange={handleInputChange}
                   ></textarea>
                 </div>
 
@@ -351,21 +537,55 @@ const AssetManagement: React.FC = () => {
                     </div>
                   </div>
                 </div>
+
+                <div className="px-6 py-4 border-t flex justify-end space-x-3 mt-4">
+                  <button
+                    type="button"
+                    onClick={handleModalClose}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-[#2A5F7F] text-white rounded-md hover:bg-[#1e4b63] transition-colors"
+                  >
+                    {isEditMode ? 'Update Asset' : 'Save Asset'}
+                  </button>
+                </div>
               </form>
             </div>
-            <div className="px-6 py-4 border-t flex justify-end space-x-3">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 bg-[#2A5F7F] text-white rounded-md hover:bg-[#1e4b63]"
-              >
-                Save Asset
-              </button>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md animate-fade-in-down">
+            <div className="p-6">
+              <div className="flex items-center text-red-500 mb-4">
+                <AlertTriangle className="h-8 w-8 mr-3" />
+                <h3 className="text-lg font-semibold">Confirm Delete</h3>
+              </div>
+              <p className="text-gray-700 mb-6">
+                Are you sure you want to delete the asset <span className="font-semibold">{assetToDelete?.name}</span>? This action cannot be undone.
+              </p>
+              
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => setIsDeleteModalOpen(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         </div>
