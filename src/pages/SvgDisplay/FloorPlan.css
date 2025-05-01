@@ -1,0 +1,49 @@
+.floorplan-wrapper {
+  font-family: sans-serif;
+  height: 100%; /* Ensure it occupies the full height */
+}
+
+svg {
+  width: 100%; /* Ensure SVG fills the parent container's width */
+  height: 100%; /* Make SVG fill available height */
+  display: block;
+}
+
+.tooltip {
+  position: absolute;
+  background: white;
+  border: 1px solid #888;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+  padding: 8px;
+  z-index: 100;
+  max-width: 250px;
+}
+
+.tooltip h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+}
+
+.tooltip ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tooltip-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.tooltip-item img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  margin-right: 8px;
+  border: 1px solid #ccc;
+}
+
+.tooltipText {
+  color: black;
+}

@@ -18,6 +18,7 @@ import Reports from "../pages/Reports";
 import UserProfile from "../pages/UserProfile";
 import AdminPanel from "../pages/AdminPanel";
 import { useNavigate } from "react-router-dom";
+import { FloorPlan } from "../pages/SvgDisplay/FloorPlan";
 
 export default function MainApp() {
   const navigate = useNavigate();
@@ -37,6 +38,8 @@ export default function MainApp() {
         return <UserProfile />;
       case "admin":
         return <AdminPanel />;
+      case "display":
+        return <FloorPlan unitSize={100} padding={10}/>;
       default:
         return <Dashboard />;
     }
@@ -132,11 +135,24 @@ export default function MainApp() {
                 Admin Panel
               </button>
             </li>
+            <li>
+              <button
+                onClick={() => setActivePage("display")}
+                className={`flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors ${
+                  activePage === "display"
+                    ? "bg-[#2A5F7F] text-white hover:bg-[#1e4b63]"
+                    : ""
+                }`}
+              >
+                <Settings className="mr-3 h-5 w-5" />
+                Display Rooms
+              </button>
+            </li>
           </ul>
         </nav>
         <div className="p-4 border-t border-gray-200">
           <button
-            onClick={()=>navigate('/login')}
+            onClick={() => navigate("/login")}
             className="flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors"
           >
             <LogOut className="mr-3 h-5 w-5" />
