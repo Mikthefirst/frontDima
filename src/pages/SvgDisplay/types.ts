@@ -3,8 +3,12 @@ export interface Item {
   id: string;
   name: string;
   count: number;
-  imageUrl: string;
+  imageUrl: string|null|undefined;
   price: number;
+  x?: number; // от 0 до 1
+  y?: number; // от 0 до 1
+  width?: number; // от 0 до 1
+  height?: number; // от 0 до 1
 }
 
 export interface Room {
@@ -26,4 +30,10 @@ export interface Asset {
   responsiblePerson: string;
   depreciation: string; // в виде строки
   acquisitionDate: string;
+  image_url: string | null;
+  width: number;
+  height: number;
+  x: number;
+  y: number;
 }
+

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, MouseEvent } from "react";
-import { Room, Asset } from "./types";
+import { Room } from "./types";
+import { loadRooms, loadRoomAssets } from "./api";
 import "./FloorPlan.css";
 
 interface FloorPlanProps {
@@ -12,35 +13,47 @@ export const FloorPlan: React.FC<FloorPlanProps> = ({
   padding = 20,
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+
   const [rooms, setRooms] = useState<Room[]>([]);
   const [selected, setSelected] = useState<{
     room: Room;
     x: number;
     y: number;
   } | null>(null);
+  const [zoomedRoom, setZoomedRoom] = useState<Room | null>(null);
 
-  // Загружаем комнаты при монтировании
   useEffect(() => {
-    fetch("http://localhost:3000/room")
-      .then((res) => res.json())
-      .then((data: Room[]) => {
-        // Пример простой сетки: 5 комнат в ряд
-        const spaced = data.map((room, idx) => ({
-          ...room,
-          x: (idx % 5) * 7,
-          y: Math.floor(idx / 5) * 6,
-          width: 6,
-          height: 4,
-          items: [],
-        }));
-        setRooms(spaced);
-      });
+    loadRooms()
+      .then(setRooms)
+      .catch((err) => console.error("Ошибка загрузки комнат:", err));
   }, []);
 
-  // Клик по комнате
+  const scrollToRoom = (room: Room, zoomed = false) => {
+    if (!wrapperRef.current || !svgRef.current) return;
+
+    const wrapper = wrapperRef.current;
+    const svg = svgRef.current;
+
+    const rx = zoomed ? svg.clientWidth * 0.1 : padding + room.x * unitSize;
+    const ry = zoomed ? svg.clientHeight * 0.1 : padding + room.y * unitSize;
+    const rw = zoomed ? svg.clientWidth * 0.8 : room.width * unitSize;
+    const rh = zoomed ? svg.clientHeight * 0.6 : room.height * unitSize;
+
+    const centerX = rx + rw / 2;
+    const centerY = ry + rh / 2;
+
+    wrapper.scrollTo({
+      left: centerX - wrapper.clientWidth / 2,
+      top: centerY - wrapper.clientHeight / 2,
+      behavior: "smooth",
+    });
+  };
+
   const onClickRoom = async (e: MouseEvent, room: Room) => {
     e.stopPropagation();
     if (!wrapperRef.current) return;
+
     const rect = wrapperRef.current.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
@@ -52,45 +65,23 @@ export const FloorPlan: React.FC<FloorPlanProps> = ({
 
     if (room.items && room.items.length > 0) {
       setSelected({ room, x: clickX, y: clickY });
+      scrollToRoom(room);
       return;
     }
 
     try {
-      const res = await fetch(
-        `http://localhost:3000/room/roomWithAssets/${room.id}`
-      );
-      const assets: Asset[] = await res.json();
-
-      // Преобразуем в items
-      const grouped = new Map<
-        string,
-        { id: string; count: number; price: number }
-      >();
-
-      for (const asset of assets) {
-        const name = asset.name;
-        const price = parseFloat(asset.depreciation); // как указано
-        if (grouped.has(name)) {
-          const entry = grouped.get(name)!;
-          entry.count += 1;
-        } else {
-          grouped.set(name, {
-            id: asset.id,
-            count: 1,
-            price,
-          });
-        }
-      }
-
-      const items = Array.from(grouped.entries()).map(
-        ([name, { id, count, price }]) => ({
-          id,
-          name,
-          count,
-          price,
-          imageUrl: "https://via.placeholder.com/80", // пока заглушка
-        })
-      );
+      const assets = await loadRoomAssets(room.id);
+      const items = assets.map((a) => ({
+        id: a.id,
+        name: a.name,
+        count: 1,
+        price: parseFloat(a.depreciation),
+        imageUrl: a.image_url,
+        x: a.x,
+        y: a.y,
+        width: a.width,
+        height: a.height,
+      }));
 
       const updatedRooms = rooms.map((r) =>
         r.id === room.id ? { ...r, items } : r
@@ -99,53 +90,74 @@ export const FloorPlan: React.FC<FloorPlanProps> = ({
 
       const updatedRoom = updatedRooms.find((r) => r.id === room.id)!;
       setSelected({ room: updatedRoom, x: clickX, y: clickY });
+      scrollToRoom(updatedRoom);
     } catch (err) {
-      console.error("Ошибка загрузки items:", err);
+      console.error("Ошибка загрузки assets:", err);
     }
   };
 
+  const onDoubleClickRoom = (e: MouseEvent, room: Room) => {
+    e.stopPropagation();
+    setZoomedRoom(room);
+    scrollToRoom(room, true);
+  };
+
   useEffect(() => {
-    const onBodyClick = () => setSelected(null);
+    const onBodyClick = () => {
+      setSelected(null);
+      setZoomedRoom(null);
+    };
     document.addEventListener("click", onBodyClick);
     return () => document.removeEventListener("click", onBodyClick);
   }, []);
 
-  // Размер SVG
   const maxX = Math.max(...rooms.map((r) => r.x + r.width), 0);
   const maxY = Math.max(...rooms.map((r) => r.y + r.height), 0);
   const svgW = maxX * unitSize + padding * 2;
   const svgH = maxY * unitSize + padding * 2;
 
+  const displayRooms = zoomedRoom ? [zoomedRoom] : rooms;
+
   return (
-    <div
-      className="floorplan-wrapper"
-      ref={wrapperRef}
-      style={{
-        position: "relative",
-        display: "inline-block",
-        height: "100%", // Make sure the wrapper takes full height
-      }}
-    >
+    <div className="floorplan-wrapper" ref={wrapperRef}>
+      {zoomedRoom && (
+        <button
+          onClick={() => setZoomedRoom(null)}
+          style={{
+            position: "absolute",
+            top: 10,
+            left: 10,
+            zIndex: 200,
+            padding: "8px 12px",
+            background: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+          }}
+        >
+          Назад
+        </button>
+      )}
+
       <svg
+        ref={svgRef}
         width={svgW}
         height={svgH}
-        style={{
-          border: "1px solid #ccc",
-          background: "#fff",
-          height: "100%", // Full height of the wrapper
-        }}
         onClick={(e) => e.stopPropagation()}
       >
-        {rooms.map((room) => {
-          const rx = padding + room.x * unitSize;
-          const ry = padding + room.y * unitSize;
-          const rw = room.width * unitSize;
-          const rh = room.height * unitSize;
+        {displayRooms.map((room) => {
+          const rx = zoomedRoom ? svgW * 0.1 : padding + room.x * unitSize;
+          const ry = zoomedRoom ? svgH * 0.1 : padding + room.y * unitSize;
+          const rw = zoomedRoom ? svgW * 0.8 : room.width * unitSize;
+          const rh = zoomedRoom ? svgH * 0.6 : room.height * unitSize;
 
           return (
             <g
               key={room.id}
               onClick={(e) => onClickRoom(e, room)}
+              onDoubleClick={(e) => onDoubleClickRoom(e, room)}
               style={{ cursor: "pointer" }}
             >
               <rect
@@ -161,20 +173,66 @@ export const FloorPlan: React.FC<FloorPlanProps> = ({
               />
               <text
                 x={rx + rw / 2}
-                y={ry + rh / 2}
+                y={ry + rh + 20}
                 textAnchor="middle"
-                dominantBaseline="middle"
-                fontSize={14}
+                dominantBaseline="hanging"
+                fontSize={16}
+                fontWeight="bold"
                 fontFamily="sans-serif"
               >
                 {room.name}
               </text>
+
+              {zoomedRoom &&
+                room.items.map((item, i) => {
+                  const ax = rx + (item.x || 0) * rw;
+                  const ay = ry + (item.y || 0) * rh;
+                  const aw = (item.width || 0.1) * rw;
+                  const ah = (item.height || 0.1) * rh;
+
+                  const hasImage = !!item.imageUrl;
+
+                  return hasImage ? (
+                    <image
+                      key={i}
+                      href={item.imageUrl ? item.imageUrl : undefined}
+                      x={ax}
+                      y={ay}
+                      width={aw}
+                      height={ah}
+                      preserveAspectRatio="xMidYMid slice"
+                    />
+                  ) : (
+                    <g key={i}>
+                      <rect
+                        x={ax}
+                        y={ay}
+                        width={aw}
+                        height={ah}
+                        fill="rgba(255, 0, 0, 0.3)"
+                        stroke="red"
+                        strokeWidth={1}
+                      />
+                      <text
+                        x={ax + aw / 2}
+                        y={ay + ah / 2}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        fontSize={10}
+                        fontFamily="sans-serif"
+                        fill="black"
+                      >
+                        {item.name}
+                      </text>
+                    </g>
+                  );
+                })}
             </g>
           );
         })}
       </svg>
 
-      {selected && selected.room.items.length > 0 && (
+      {selected && selected.room.items.length > 0 && !zoomedRoom && (
         <div
           className="tooltip"
           style={{
@@ -187,7 +245,7 @@ export const FloorPlan: React.FC<FloorPlanProps> = ({
           <ul>
             {selected.room.items.map((item) => (
               <li key={item.id} className="tooltip-item">
-                <img src={item.imageUrl} alt={item.name} />
+                <img src={item.imageUrl?item.imageUrl:undefined} alt={item.name} />
                 <div className="tooltipText">
                   <strong>{item.name}</strong>
                   <div>Кол-во: {item.count}</div>

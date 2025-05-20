@@ -1,12 +1,20 @@
 .floorplan-wrapper {
   font-family: sans-serif;
-  height: 100%; /* Ensure it occupies the full height */
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  position: relative;
+  box-sizing: border-box;
+  overflow-x: scroll;
+  overflow-y: scroll;
 }
 
 svg {
-  width: 100%; /* Ensure SVG fills the parent container's width */
-  height: 100%; /* Make SVG fill available height */
   display: block;
+  width: 150%;
+  height: 80%;
+  overflow-x: scroll;
+  overflow-y: scroll;
 }
 
 .tooltip {

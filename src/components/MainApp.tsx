@@ -13,7 +13,6 @@ import {
 
 import Dashboard from "../pages/Dashboard";
 import AssetManagement from "../pages/AssetManagement";
-//import MBPSection from "../pages/MBPSection";
 import MBP_Page from "../pages/MBP/MBP";
 import Reports from "../pages/Reports";
 import UserProfile from "../pages/UserProfile";
@@ -40,7 +39,7 @@ export default function MainApp() {
       case "admin":
         return <AdminPanel />;
       case "display":
-        return <FloorPlan unitSize={100} padding={10}/>;
+        return <FloorPlan unitSize={70} padding={50}/>;
       default:
         return <Dashboard />;
     }
