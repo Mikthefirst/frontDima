@@ -13,7 +13,8 @@ import {
 
 import Dashboard from "../pages/Dashboard";
 import AssetManagement from "../pages/AssetManagement";
-import MBPSection from "../pages/MBPSection";
+//import MBPSection from "../pages/MBPSection";
+import MBP_Page from "../pages/MBP/MBP";
 import Reports from "../pages/Reports";
 import UserProfile from "../pages/UserProfile";
 import AdminPanel from "../pages/AdminPanel";
@@ -31,7 +32,7 @@ export default function MainApp() {
       case "assets":
         return <AssetManagement />;
       case "mbp":
-        return <MBPSection />;
+        return <MBP_Page />;
       case "reports":
         return <Reports />;
       case "profile":
