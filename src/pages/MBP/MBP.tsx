@@ -303,36 +303,36 @@ function MBP_Page() {
                 <div>
                   <div className="flex justify-between text-sm text-gray-600 mb-1">
                     <span>Office Supplies</span>
-                    <span>65%</span>
+                    <span>100%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
                     <div
                       className="bg-[#2A5F7F] h-2.5 rounded-full"
-                      style={{ width: "65%" }}
+                      style={{ width: "100%" }}
                     ></div>
                   </div>
                 </div>
                 <div>
                   <div className="flex justify-between text-sm text-gray-600 mb-1">
                     <span>Lab Equipment</span>
-                    <span>25%</span>
+                    <span>0%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
                     <div
                       className="bg-[#3d7ea1] h-2.5 rounded-full"
-                      style={{ width: "25%" }}
+                      style={{ width: "0%" }}
                     ></div>
                   </div>
                 </div>
                 <div>
                   <div className="flex justify-between text-sm text-gray-600 mb-1">
                     <span>Health & Safety</span>
-                    <span>10%</span>
+                    <span>0%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
                     <div
                       className="bg-[#5096bd] h-2.5 rounded-full"
-                      style={{ width: "10%" }}
+                      style={{ width: "0%" }}
                     ></div>
                   </div>
                 </div>

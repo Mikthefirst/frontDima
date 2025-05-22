@@ -8,6 +8,15 @@ interface AddMBPModalProps {
   onSuccess: () => void;
 }
 
+
+const CATEGORIES = [
+  "Office Supplies",
+  "Edu Equipment",
+  "Health & Safety",
+  "Sport Equipment",
+  "Other Categories",
+];
+
 const AddMBPModal: React.FC<AddMBPModalProps> = ({
   isOpen,
   onClose,
@@ -93,14 +102,20 @@ const AddMBPModal: React.FC<AddMBPModalProps> = ({
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Category *
           </label>
-          <input
-            type="text"
+          <select
             name="category"
             value={formData.category}
             onChange={handleChange}
             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
             required
-          />
+          >
+            <option value="">Select a category</option>
+            {CATEGORIES.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="grid grid-cols-2 gap-4">

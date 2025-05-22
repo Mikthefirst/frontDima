@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   User, 
   Mail, 
@@ -15,12 +15,32 @@ interface ActivityLog {
 }
 
 const UserProfile: React.FC = () => {
+
+
   const [name, setName] = useState('John Smith');
   const [email, setEmail] = useState('john.smith@college.edu');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  /*useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("app/user");
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+        const userData = await response.json();
+
+        setName(userData.name || "");
+        setEmail(userData.email || "");
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+      } 
+    };
+
+    fetchUserData();
+  }, []);*/
   // Sample data
   const activityLogs: ActivityLog[] = [
     {

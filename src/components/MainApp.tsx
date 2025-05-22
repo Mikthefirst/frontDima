@@ -14,7 +14,8 @@ import {
 import Dashboard from "../pages/Dashboard";
 import AssetManagement from "../pages/AssetManagement";
 import MBP_Page from "../pages/MBP/MBP";
-import Reports from "../pages/Reports";
+//import Reports from "../pages/Reports";
+import ReportPage from "../pages/Reports/ReportPage";
 import UserProfile from "../pages/UserProfile";
 import AdminPanel from "../pages/AdminPanel";
 import { useNavigate } from "react-router-dom";
@@ -33,7 +34,7 @@ export default function MainApp() {
       case "mbp":
         return <MBP_Page />;
       case "reports":
-        return <Reports />;
+        return <ReportPage />;
       case "profile":
         return <UserProfile />;
       case "admin":
