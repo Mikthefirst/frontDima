@@ -4,95 +4,108 @@ import {
   Mail, 
   Lock, 
   Save,
-  Clock
+  //Clock
 } from 'lucide-react';
 
-interface ActivityLog {
-  id: string;
-  action: string;
-  timestamp: string;
-  details: string;
-}
-
 const UserProfile: React.FC = () => {
-
-
-  const [name, setName] = useState('John Smith');
-  const [email, setEmail] = useState('john.smith@college.edu');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [role, setRole] = useState('');
+  const [id, setId] = useState('')
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  /*useEffect(() => {
+  useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("app/user");
+        const response = await fetch("http://localhost:3000/user", {credentials: "include"});
         if (!response.ok) {
           throw new Error("Failed to fetch user data");
         }
         const userData = await response.json();
-
-        setName(userData.name || "");
-        setEmail(userData.email || "");
+        console.log(userData[0]);
+        setName(
+          userData[0].full_name || userData[0].username
+        );
+        setId(userData[0].id)
+        setEmail(userData[0].email || "");
+        setRole(userData[0].role||undefined)
       } catch (err) {
         console.error("Error fetching user data:", err);
       } 
     };
 
     fetchUserData();
-  }, []);*/
-  // Sample data
-  const activityLogs: ActivityLog[] = [
-    {
-      id: '1',
-      action: 'Added Asset',
-      timestamp: '2024-05-15 09:32:45',
-      details: 'Added Asset #01360776 (Dell XPS 15 Laptop)'
-    },
-    {
-      id: '2',
-      action: 'Generated Report',
-      timestamp: '2024-05-14 14:15:22',
-      details: 'Generated Q2 Asset Summary Report'
-    },
-    {
-      id: '3',
-      action: 'Updated MBP',
-      timestamp: '2024-05-13 11:05:37',
-      details: 'Added 50 Notebooks to inventory'
-    },
-    {
-      id: '4',
-      action: 'Transferred Asset',
-      timestamp: '2024-05-12 16:48:19',
-      details: 'Transferred Projector from Room 101 to Room 203'
-    },
-    {
-      id: '5',
-      action: 'Updated Profile',
-      timestamp: '2024-05-10 10:22:05',
-      details: 'Changed email address'
-    },
-  ];
+  }, []);
+ 
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would save the profile changes
-    alert('Profile updated successfully');
+
+    try {
+      const response = await fetch(`http://localhost:3000/user/${id}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          full_name: name,
+          email: email,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update profile");
+      }
+
+      alert("Profile updated successfully");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("There was an error updating your profile.");
+    }
   };
+  
 
-  const handleChangePassword = (e: React.FormEvent) => {
+  const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would change the password
+
     if (newPassword !== confirmPassword) {
-      alert('New passwords do not match');
+      alert("New passwords do not match");
       return;
     }
-    alert('Password changed successfully');
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/user/change-password/${id}`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            currentPassword,
+            newPassword,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Password change failed");
+      }
+
+      alert("Password changed successfully");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      console.error("Error changing password:", error);
+      alert("There was an error changing your password.");
+    }
   };
+  
 
   return (
     <div className="space-y-6">
@@ -148,11 +161,11 @@ const UserProfile: React.FC = () => {
                   <input
                     type="text"
                     id="role"
-                    value="Asset Manager"
+                    value={role}
                     disabled
                     className="block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm py-2 px-3 border text-gray-500"
                   />
-                  <p className="mt-1 text-xs text-gray-500">Role changes can only be made by an administrator.</p>
+                  <p className="mt-1 text-xs text-gray-500">Role cant be changed.</p>
                 </div>
                 <div className="pt-2">
                   <button
@@ -260,6 +273,61 @@ const UserProfile: React.FC = () => {
             </div>
           </div>
 
+
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default UserProfile;
+
+
+
+
+/*
+
+interface ActivityLog {
+  id: string;
+  action: string;
+  timestamp: string;
+  details: string;
+}
+
+ const activityLogs: ActivityLog[] = [
+    {
+      id: '1',
+      action: 'Added Asset',
+      timestamp: '2024-05-15 09:32:45',
+      details: 'Added Asset #01360776 (Dell XPS 15 Laptop)'
+    },
+    {
+      id: '2',
+      action: 'Generated Report',
+      timestamp: '2024-05-14 14:15:22',
+      details: 'Generated Q2 Asset Summary Report'
+    },
+    {
+      id: '3',
+      action: 'Updated MBP',
+      timestamp: '2024-05-13 11:05:37',
+      details: 'Added 50 Notebooks to inventory'
+    },
+    {
+      id: '4',
+      action: 'Transferred Asset',
+      timestamp: '2024-05-12 16:48:19',
+      details: 'Transferred Projector from Room 101 to Room 203'
+    },
+    {
+      id: '5',
+      action: 'Updated Profile',
+      timestamp: '2024-05-10 10:22:05',
+      details: 'Changed email address'
+    },
+  ];
+
+
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">Activity Log</h2>
             <div className="space-y-4">
@@ -284,10 +352,4 @@ const UserProfile: React.FC = () => {
               </button>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default UserProfile;
+*/
