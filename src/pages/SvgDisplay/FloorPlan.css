@@ -55,3 +55,16 @@ svg {
 .tooltipText {
   color: black;
 }
+
+.zoomed-tooltip {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.3s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -12,6 +12,14 @@ export const FloorPlan: React.FC<FloorPlanProps> = ({
   unitSize = 50,
   padding = 20,
 }) => {
+  const [zoomedInfo, setZoomedInfo] = useState<{
+    x: number;
+    y: number;
+    room: Room;
+  } | null>(null);
+  
+
+
   const wrapperRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
@@ -57,6 +65,16 @@ export const FloorPlan: React.FC<FloorPlanProps> = ({
     const rect = wrapperRef.current.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
+    if (zoomedRoom) {
+      console.log(zoomedRoom, " roomis Zoomed")
+      console.log("clickX: ", clickX, " clickY: ", clickY);
+
+    }
+
+    if (zoomedRoom && room.id === zoomedRoom.id) {
+      setZoomedInfo({ x: clickX, y: clickY, room });
+      return;
+    }
 
     if (selected?.room.id === room.id) {
       setSelected(null);
@@ -89,12 +107,17 @@ export const FloorPlan: React.FC<FloorPlanProps> = ({
       setRooms(updatedRooms);
 
       const updatedRoom = updatedRooms.find((r) => r.id === room.id)!;
-      setSelected({ room: updatedRoom, x: clickX, y: clickY });
-      scrollToRoom(updatedRoom);
+      if (zoomedRoom && updatedRoom.id === zoomedRoom.id) {
+        setZoomedInfo({ x: clickX, y: clickY, room: updatedRoom });
+      } else {
+        setSelected({ room: updatedRoom, x: clickX, y: clickY });
+        scrollToRoom(updatedRoom);
+      }
     } catch (err) {
       console.error("Ошибка загрузки assets:", err);
     }
   };
+  
 
   const onDoubleClickRoom = (e: MouseEvent, room: Room) => {
     e.stopPropagation();
@@ -106,6 +129,7 @@ export const FloorPlan: React.FC<FloorPlanProps> = ({
     const onBodyClick = () => {
       setSelected(null);
       setZoomedRoom(null);
+      setZoomedInfo(null);
     };
     document.addEventListener("click", onBodyClick);
     return () => document.removeEventListener("click", onBodyClick);
@@ -245,7 +269,10 @@ export const FloorPlan: React.FC<FloorPlanProps> = ({
           <ul>
             {selected.room.items.map((item) => (
               <li key={item.id} className="tooltip-item">
-                <img src={item.imageUrl?item.imageUrl:undefined} alt={item.name} />
+                <img
+                  src={item.imageUrl ? item.imageUrl : undefined}
+                  alt={item.name}
+                />
                 <div className="tooltipText">
                   <strong>{item.name}</strong>
                   <div>Кол-во: {item.count}</div>
@@ -254,6 +281,31 @@ export const FloorPlan: React.FC<FloorPlanProps> = ({
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {zoomedInfo && (
+        <div
+          className="zoomed-tooltip"
+          style={{
+            top: zoomedInfo.y + 10,
+            left: zoomedInfo.x + 10,
+            position: "absolute",
+            background: "#fff",
+            border: "1px solid #ccc",
+            padding: "8px 12px",
+            borderRadius: "4px",
+            zIndex: 300,
+            boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+            pointerEvents: "auto",
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div>
+            <strong>Координаты:</strong>
+          </div>
+          <div>x: {zoomedInfo.x}</div>
+          <div>y: {zoomedInfo.y}</div>
         </div>
       )}
     </div>

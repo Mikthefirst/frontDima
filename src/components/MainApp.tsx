@@ -40,7 +40,7 @@ export default function MainApp() {
       case "admin":
         return <AdminPanel />;
       case "display":
-        return <FloorPlan unitSize={70} padding={50}/>;
+        return <FloorPlan unitSize={50} padding={30}/>;
       default:
         return <Dashboard />;
     }
