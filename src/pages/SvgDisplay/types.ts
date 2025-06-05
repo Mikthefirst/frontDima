@@ -27,7 +27,6 @@ export interface Asset {
   name: string;
   inventory_number: number;
   room_id: string;
-  responsiblePerson: string;
   depreciation: string; // в виде строки
   acquisitionDate: string;
   image_url: string | null;

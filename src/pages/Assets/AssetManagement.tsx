@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Search, 
   Plus, 
@@ -10,103 +10,33 @@ import {
   Upload,
   AlertTriangle
 } from 'lucide-react';
+import { Asset, AssetFormData,  } from './types';
+import { addAsset, fetchAllRooms, fetchAssets } from './api';
+import { Room } from '../MBP/types';
 
-interface Asset {
-  id: string;
-  inventoryNo: string;
-  name: string;
-  location: string;
-  responsiblePerson: string;
-  depreciation: string;
-  purchaseDate: string;
-  value: number;
-  description?: string;
-}
+
 
 const AssetManagement: React.FC = () => {
-  // Sample data
-  const initialAssets: Asset[] = [
-    {
-      id: '1',
-      inventoryNo: '01360776',
-      name: 'Dell XPS 15 Laptop',
-      location: 'Room 101',
-      responsiblePerson: 'John Smith',
-      depreciation: '25%',
-      purchaseDate: '2023-01-15',
-      value: 1200,
-      description: 'High-performance laptop for design team'
-    },
-    {
-      id: '2',
-      inventoryNo: '01360777',
-      name: 'HP LaserJet Printer',
-      location: 'Room 102',
-      responsiblePerson: 'Sarah Johnson',
-      depreciation: '30%',
-      purchaseDate: '2022-11-05',
-      value: 450,
-      description: 'Color laser printer for marketing department'
-    },
-    {
-      id: '3',
-      inventoryNo: '01360778',
-      name: 'Projector Epson EB-X51',
-      location: 'Room 203',
-      responsiblePerson: 'Michael Brown',
-      depreciation: '15%',
-      purchaseDate: '2023-03-22',
-      value: 650,
-      description: 'Projector for conference room presentations'
-    },
-    {
-      id: '4',
-      inventoryNo: '01360779',
-      name: 'Conference Table',
-      location: 'Room 305',
-      responsiblePerson: 'Emily Davis',
-      depreciation: '10%',
-      purchaseDate: '2022-08-17',
-      value: 800,
-      description: 'Large oak conference table for meeting room'
-    },
-    {
-      id: '5',
-      inventoryNo: '01360780',
-      name: 'Office Chair (Ergonomic)',
-      location: 'Room 101',
-      responsiblePerson: 'John Smith',
-      depreciation: '20%',
-      purchaseDate: '2023-02-08',
-      value: 250,
-      description: 'Ergonomic office chair with lumbar support'
-    },
-    {
-      id: '6',
-      inventoryNo: '01360781',
-      name: 'Whiteboard (Large)',
-      location: 'Room 203',
-      responsiblePerson: 'Michael Brown',
-      depreciation: '5%',
-      purchaseDate: '2023-04-10',
-      value: 180,
-      description: 'Large magnetic whiteboard for team meetings'
-    },
-  ];
-
   // State management
-  const [assets, setAssets] = useState<Asset[]>(initialAssets);
+  const [assets, setAssets] = useState<Asset[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRoom, setFilterRoom] = useState('');
-  const [filterPerson, setFilterPerson] = useState('');
   const [currentAsset, setCurrentAsset] = useState<Asset | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [assetToDelete, setAssetToDelete] = useState<Asset | null>(null);
-  const [formData, setFormData] = useState<Partial<Asset>>({});
+  const [formData, setFormData] = useState<AssetFormData>({});
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
+  const [rooms, setRooms] = useState<Room[]>([]);
 
+
+  useEffect(() => {
+    fetchAssets().then(setAssets).catch(console.error);
+    fetchAllRooms().then(setRooms).catch(console.error);
+
+  }, []);
+  
   // Handle notifications
   const showNotification = (message: string, type: 'success' | 'error') => {
     setNotification({ message, type });
@@ -114,18 +44,19 @@ const AssetManagement: React.FC = () => {
   };
 
   // Filter assets based on search and filter criteria
-  const filteredAssets = assets.filter(asset => {
-    const matchesSearch = asset.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          asset.inventoryNo.includes(searchTerm);
-    const matchesRoom = filterRoom === '' || asset.location === filterRoom;
-    const matchesPerson = filterPerson === '' || asset.responsiblePerson === filterPerson;
-    
-    return matchesSearch && matchesRoom && matchesPerson;
+  const filteredAssets = assets.filter((asset) => {
+    const matchesSearch =
+      asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      asset.inventoryNo.toString().includes(searchTerm);
+
+    const matchesRoom = filterRoom === "" || asset.location === filterRoom;
+
+    return matchesSearch && matchesRoom;
   });
+  
 
   // Get unique values for filter dropdowns
-  const uniqueRooms = Array.from(new Set(assets.map(asset => asset.location)));
-  const uniquePersons = Array.from(new Set(assets.map(asset => asset.responsiblePerson)));
+  const uniqueRooms = rooms.map((room) => room.name);
 
   // Handle edit button click
   const handleEditClick = (asset: Asset) => {
@@ -152,45 +83,53 @@ const AssetManagement: React.FC = () => {
   };
 
   // Handle add/edit form submission
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       if (isEditMode && currentAsset) {
-        // Update existing asset
-        const updatedAssets = assets.map(asset => 
+        // TODO: Добавить update через fetch (PUT)
+        const updatedAssets = assets.map((asset) =>
           asset.id === currentAsset.id ? { ...asset, ...formData } : asset
         );
         setAssets(updatedAssets);
-        showNotification(`Asset ${formData.name} updated successfully`, 'success');
+        showNotification(
+          `Asset ${formData.name} updated successfully`,
+          "success"
+        );
       } else {
-        // Add new asset
-        const newAsset: Asset = {
-          id: Date.now().toString(), // Generate a new ID
-          inventoryNo: formData.inventoryNo || '',
-          name: formData.name || '',
-          location: formData.location || '',
-          responsiblePerson: formData.responsiblePerson || '',
-          depreciation: formData.depreciation || '0%',
-          purchaseDate: formData.purchaseDate || new Date().toISOString().split('T')[0],
+        const newAsset = await addAsset({
+          inventoryNo: 0,
+          name: formData.name || "",
+          location: formData.location || "",
+          depreciation: formData.depreciation || "0.00",
+          purchaseDate:
+            formData.purchaseDate || new Date().toISOString().split("T")[0],
           value: formData.value || 0,
-          description: formData.description || ''
-        };
-        
+          description: formData.description || "",
+          x: formData.x || 0,
+          y: formData.y || 0,
+          width: formData.width || 0.1,
+          height: formData.height || 0.1,
+        });
+
         setAssets([...assets, newAsset]);
-        showNotification(`Asset ${newAsset.name} added successfully`, 'success');
+        showNotification(
+          `Asset ${newAsset.name} added successfully`,
+          "success"
+        );
       }
-      
-      // Reset and close modal
+
       setIsModalOpen(false);
       setFormData({});
       setCurrentAsset(null);
       setIsEditMode(false);
     } catch (error) {
-      showNotification('An error occurred while saving the asset', 'error');
-      console.error('Error saving asset:', error);
+      showNotification("An error occurred while saving the asset", "error");
+      console.error("Error saving asset:", error);
     }
   };
+  
 
   // Handle asset deletion confirmation
   const confirmDelete = () => {
@@ -228,14 +167,15 @@ const AssetManagement: React.FC = () => {
     <div className="space-y-6 p-6 max-w-[1600px] mx-auto">
       {/* Notification */}
       {notification && (
-        <div 
+        <div
           className={`fixed top-4 right-4 p-4 rounded-md shadow-lg z-50 max-w-md transition-all duration-300 ease-in-out transform translate-x-0 ${
-            notification.type === 'success' ? 'bg-green-100 text-green-800 border-l-4 border-green-500' : 
-            'bg-red-100 text-red-800 border-l-4 border-red-500'
+            notification.type === "success"
+              ? "bg-green-100 text-green-800 border-l-4 border-green-500"
+              : "bg-red-100 text-red-800 border-l-4 border-red-500"
           }`}
         >
           <div className="flex items-center">
-            {notification.type === 'success' ? (
+            {notification.type === "success" ? (
               <span className="flex-shrink-0 mr-2">✓</span>
             ) : (
               <AlertTriangle className="flex-shrink-0 mr-2 h-5 w-5" />
@@ -246,8 +186,10 @@ const AssetManagement: React.FC = () => {
       )}
 
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-800">Asset Management (UOS)</h1>
-        <button 
+        <h1 className="text-2xl font-bold text-gray-800">
+          Управление активами (УО)
+        </h1>
+        <button
           onClick={openAddModal}
           className="flex items-center bg-[#2A5F7F] text-white px-4 py-2 rounded-md hover:bg-[#1e4b63] transition-colors duration-300 transform hover:scale-105"
         >
@@ -271,7 +213,7 @@ const AssetManagement: React.FC = () => {
               className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
             />
           </div>
-          
+
           <div>
             <select
               value={filterRoom}
@@ -279,25 +221,14 @@ const AssetManagement: React.FC = () => {
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
             >
               <option value="">Filter by Room</option>
-              {uniqueRooms.map(room => (
-                <option key={room} value={room}>{room}</option>
+              {uniqueRooms.map((room) => (
+                <option key={room} value={room}>
+                  {room}
+                </option>
               ))}
             </select>
           </div>
-          
-          <div>
-            <select
-              value={filterPerson}
-              onChange={(e) => setFilterPerson(e.target.value)}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
-            >
-              <option value="">Filter by Responsible Person</option>
-              {uniquePersons.map(person => (
-                <option key={person} value={person}>{person}</option>
-              ))}
-            </select>
-          </div>
-          
+
           <div className="flex space-x-2">
             <button className="flex items-center bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">
               <Filter className="mr-2 h-5 w-5" />
@@ -317,37 +248,65 @@ const AssetManagement: React.FC = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Inventory No.</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Responsible Person</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Purchase Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Depreciation</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Inventory No.
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Location
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Responsible Person
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Purchase Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Value
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Depreciation
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredAssets.map((asset) => (
                 <tr key={asset.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#2A5F7F]">{asset.inventoryNo}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{asset.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{asset.location}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{asset.responsiblePerson}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{asset.purchaseDate}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${asset.value.toFixed(2)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{asset.depreciation}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#2A5F7F]">
+                    {asset.inventoryNo}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {asset.name}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {asset.location}
+                  </td>
+
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {asset.purchaseDate}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    ${asset.value.toFixed(2)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {asset.depreciation}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <div className="flex space-x-3">
-                      <button 
-                        onClick={() => handleEditClick(asset)} 
+                      <button
+                        onClick={() => handleEditClick(asset)}
                         className="text-blue-600 hover:text-blue-800 transition-colors duration-200 transform hover:scale-110"
                         aria-label="Edit asset"
                       >
                         <Edit className="h-5 w-5" />
                       </button>
-                      <button 
-                        onClick={() => handleDeleteClick(asset)} 
+                      <button
+                        onClick={() => handleDeleteClick(asset)}
                         className="text-red-600 hover:text-red-800 transition-colors duration-200 transform hover:scale-110"
                         aria-label="Delete asset"
                       >
@@ -373,9 +332,9 @@ const AssetManagement: React.FC = () => {
           <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in-scale">
             <div className="flex justify-between items-center p-6 border-b">
               <h2 className="text-xl font-semibold text-gray-800">
-                {isEditMode ? 'Edit Asset' : 'Add New Asset'}
+                {isEditMode ? "Edit Asset" : "Add New Asset"}
               </h2>
-              <button 
+              <button
                 onClick={handleModalClose}
                 className="text-gray-500 hover:text-gray-700 transition-colors"
               >
@@ -386,21 +345,10 @@ const AssetManagement: React.FC = () => {
               <form className="space-y-4" onSubmit={handleFormSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="inventoryNo" className="block text-sm font-medium text-gray-700 mb-1">
-                      Inventory Number
-                    </label>
-                    <input
-                      type="text"
-                      id="inventoryNo"
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
-                      placeholder="e.g., 01360782"
-                      value={formData.inventoryNo || ''}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Asset Name
                     </label>
                     <input
@@ -408,7 +356,7 @@ const AssetManagement: React.FC = () => {
                       id="name"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
                       placeholder="e.g., Dell XPS 15 Laptop"
-                      value={formData.name || ''}
+                      value={formData.name || ""}
                       onChange={handleInputChange}
                       required
                     />
@@ -417,59 +365,122 @@ const AssetManagement: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="location"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Location
                     </label>
                     <select
                       id="location"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
-                      value={formData.location || ''}
+                      value={formData.location || ""}
                       onChange={handleInputChange}
                       required
                     >
                       <option value="">Select a room</option>
-                      {uniqueRooms.map(room => (
-                        <option key={room} value={room}>{room}</option>
+                      {uniqueRooms.map((room) => (
+                        <option key={room} value={room}>
+                          {room}
+                        </option>
                       ))}
-                      <option value="new">+ Add New Room</option>
                     </select>
                   </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
-                    <label htmlFor="responsiblePerson" className="block text-sm font-medium text-gray-700 mb-1">
-                      Responsible Person
+                    <label
+                      htmlFor="x"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      X
                     </label>
-                    <select
-                      id="responsiblePerson"
+                    <input
+                      type="number"
+                      id="x"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
-                      value={formData.responsiblePerson || ''}
+                      placeholder="e.g., 10"
+                      value={formData.x || ""}
                       onChange={handleInputChange}
                       required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="y"
+                      className="block text-sm font-medium text-gray-700 mb-1"
                     >
-                      <option value="">Select a person</option>
-                      {uniquePersons.map(person => (
-                        <option key={person} value={person}>{person}</option>
-                      ))}
-                      <option value="new">+ Add New Person</option>
-                    </select>
+                      Y
+                    </label>
+                    <input
+                      type="number"
+                      id="y"
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
+                      placeholder="e.g., 20"
+                      value={formData.y || ""}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="width"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Width
+                    </label>
+                    <input
+                      type="number"
+                      id="width"
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
+                      placeholder="e.g., 100"
+                      value={formData.width || ""}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="height"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Height
+                    </label>
+                    <input
+                      type="number"
+                      id="height"
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
+                      placeholder="e.g., 150"
+                      value={formData.height || ""}
+                      onChange={handleInputChange}
+                      required
+                    />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label htmlFor="purchaseDate" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="purchaseDate"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Purchase Date
                     </label>
                     <input
                       type="date"
                       id="purchaseDate"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
-                      value={formData.purchaseDate || ''}
+                      value={formData.purchaseDate || ""}
                       onChange={handleInputChange}
                       required
                     />
                   </div>
                   <div>
-                    <label htmlFor="value" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="value"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Value ($)
                     </label>
                     <input
@@ -479,13 +490,16 @@ const AssetManagement: React.FC = () => {
                       placeholder="e.g., 1200"
                       min="0"
                       step="0.01"
-                      value={formData.value || ''}
+                      value={formData.value || ""}
                       onChange={handleInputChange}
                       required
                     />
                   </div>
                   <div>
-                    <label htmlFor="depreciation" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="depreciation"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Depreciation (%)
                     </label>
                     <input
@@ -493,7 +507,7 @@ const AssetManagement: React.FC = () => {
                       id="depreciation"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
                       placeholder="e.g., 25%"
-                      value={formData.depreciation || ''}
+                      value={formData.depreciation || ""}
                       onChange={handleInputChange}
                       required
                     />
@@ -501,7 +515,10 @@ const AssetManagement: React.FC = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="description"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Description
                   </label>
                   <textarea
@@ -509,7 +526,7 @@ const AssetManagement: React.FC = () => {
                     rows={3}
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
                     placeholder="Enter asset description..."
-                    value={formData.description || ''}
+                    value={formData.description || ""}
                     onChange={handleInputChange}
                   ></textarea>
                 </div>
@@ -527,13 +544,33 @@ const AssetManagement: React.FC = () => {
                           className="relative cursor-pointer bg-white rounded-md font-medium text-[#2A5F7F] hover:text-[#1e4b63]"
                         >
                           <span>Upload a file</span>
-                          <input id="file-upload" name="file-upload" type="file" className="sr-only" />
+                          <input
+                            id="file-upload"
+                            name="file-upload"
+                            type="file"
+                            className="sr-only"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  file,
+                                }));
+                              }
+                            }}
+                          />
                         </label>
                         <p className="pl-1">or drag and drop</p>
                       </div>
                       <p className="text-xs text-gray-500">
                         PNG, JPG, GIF up to 10MB
                       </p>
+                      {formData.file && (
+                        <p className="text-xs text-green-600">
+                          Selected file: {formData.file.name}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -550,7 +587,7 @@ const AssetManagement: React.FC = () => {
                     type="submit"
                     className="px-4 py-2 bg-[#2A5F7F] text-white rounded-md hover:bg-[#1e4b63] transition-colors"
                   >
-                    {isEditMode ? 'Update Asset' : 'Save Asset'}
+                    {isEditMode ? "Update Asset" : "Save Asset"}
                   </button>
                 </div>
               </form>
@@ -569,9 +606,11 @@ const AssetManagement: React.FC = () => {
                 <h3 className="text-lg font-semibold">Confirm Delete</h3>
               </div>
               <p className="text-gray-700 mb-6">
-                Are you sure you want to delete the asset <span className="font-semibold">{assetToDelete?.name}</span>? This action cannot be undone.
+                Are you sure you want to delete the asset{" "}
+                <span className="font-semibold">{assetToDelete?.name}</span>?
+                This action cannot be undone.
               </p>
-              
+
               <div className="flex justify-end space-x-3">
                 <button
                   onClick={() => setIsDeleteModalOpen(false)}

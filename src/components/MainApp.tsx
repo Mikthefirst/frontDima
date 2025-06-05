@@ -12,9 +12,8 @@ import {
 
 
 import Dashboard from "../pages/Dashboard";
-import AssetManagement from "../pages/AssetManagement";
+import AssetManagement from "../pages/Assets/AssetManagement";
 import MBP_Page from "../pages/MBP/MBP";
-//import Reports from "../pages/Reports";
 import ReportPage from "../pages/Reports/ReportPage";
 import UserProfile from "../pages/UserProfile";
 import AdminPanel from "../pages/AdminPanel";
