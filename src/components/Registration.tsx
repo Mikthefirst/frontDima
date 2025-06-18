@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { User, Mail, Lock, Building, LayoutGrid } from "lucide-react";
+import { User, Mail, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const server = import.meta.env.VITE_SERVER_URL;
@@ -14,26 +14,12 @@ const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
-    fullName: "",
+    full_name: "",
     password: "",
     confirmPassword: "",
     role: "",
-    buildingId: "",
-    roomId: "",
   });
 
-  const buildings = [
-    { id: "1", name: "Main Building" },
-    { id: "2", name: "Science Building" },
-    { id: "3", name: "Library" },
-  ];
-
-  const rooms = [
-    { id: "101", buildingId: "1", name: "Room 101" },
-    { id: "102", buildingId: "1", name: "Room 102" },
-    { id: "201", buildingId: "2", name: "Lab 201" },
-    { id: "202", buildingId: "2", name: "Lab 202" },
-  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
       
@@ -46,7 +32,7 @@ const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
         }
     console.log(formData);
         try {
-          /*const response = await fetch("http://localhost:3000/user", {
+          const response = await fetch(`${server}/auth/register`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -55,7 +41,7 @@ const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
           });
 
           if (!response.ok) throw new Error("Registration failed");
-*/
+
           alert("Registration successful!");
           onLogin();
           navigate('/main');
@@ -63,7 +49,6 @@ const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
           console.error("Error:", error);
           alert("Error registering user");
         }
-    //onLogin();
   };
 
   const handleChange = (
@@ -140,7 +125,7 @@ const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
 
               <div>
                 <label
-                  htmlFor="fullName"
+                  htmlFor="full_name"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
                   Full Name
@@ -150,11 +135,11 @@ const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
                     <User className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
-                    id="fullName"
-                    name="fullName"
+                    id="full_name"
+                    name="full_name"
                     type="text"
                     required
-                    value={formData.fullName}
+                    value={formData.full_name}
                     onChange={handleChange}
                     className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
                   />
@@ -180,68 +165,6 @@ const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
                   <option value="teacher">Teacher</option>
                   <option value="mol">MOL</option>
                 </select>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="buildingId"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Building (Optional)
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Building className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <select
-                    id="buildingId"
-                    name="buildingId"
-                    value={formData.buildingId}
-                    onChange={handleChange}
-                    className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
-                  >
-                    <option value="">Select Building</option>
-                    {buildings.map((building) => (
-                      <option key={building.id} value={building.id}>
-                        {building.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="roomId"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Room (Optional)
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <LayoutGrid className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <select
-                    id="roomId"
-                    name="roomId"
-                    value={formData.roomId}
-                    onChange={handleChange}
-                    className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
-                  >
-                    <option value="">Select Room</option>
-                    {rooms
-                      .filter(
-                        (room) =>
-                          !formData.buildingId ||
-                          room.buildingId === formData.buildingId
-                      )
-                      .map((room) => (
-                        <option key={room.id} value={room.id}>
-                          {room.name}
-                        </option>
-                      ))}
-                  </select>
-                </div>
               </div>
 
               <div>

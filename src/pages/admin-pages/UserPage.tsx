@@ -51,7 +51,7 @@ const UserPage: React.FC = () => {
       const response = await fetch(
         `${server}/user/${editingUser.id}`,
         {
-          method: "PATCH",
+          method: "PUT",
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
