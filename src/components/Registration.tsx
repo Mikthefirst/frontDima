@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { User, Mail, Lock, Building, LayoutGrid } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+const server = import.meta.env.VITE_SERVER_URL;
+
 interface RegistrationProps {
   onLogin: () => void;
 }
@@ -34,13 +36,6 @@ const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
-    // e.preventDefault();
-    // if (formData.password !== formData.confirmPassword) {
-    //   alert("Passwords do not match");
-    //   return;
-    // }
-    // // In a real app, you would send this data to your backend
-      // console.log("Registration data:", formData);
       
 
         e.preventDefault();

@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { User, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
+const server = import.meta.env.VITE_SERVER_URL;
+console.log('server env:', server)
 
 interface LoginProps {
   onLogin: () => void;
   onRegister: () => void;
 }
 
-const Login: React.FC<LoginProps> = ({ onLogin, onRegister }) => {
+const Login: React.FC<LoginProps> = ({ onLogin, }) => {
     const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
@@ -22,7 +23,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onRegister }) => {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:3000/auth/login", {
+      const response = await fetch(`${server}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -31,7 +32,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onRegister }) => {
           email: username,
           password,
         }),
-        credentials:'include'
+        credentials: "include",
       });
 
       const data = await response.json();

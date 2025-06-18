@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Search, Edit, Trash2, Check, X } from "lucide-react";
 import { User, ApiError } from "../../types/types";
+const server = import.meta.env.VITE_SERVER_URL;
 
 const UserPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,7 +14,7 @@ const UserPage: React.FC = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const url = "http://localhost:3000/user";
+        const url = `${server}/user`;
 
         const response = await fetch(url, {
           credentials: "include",
@@ -48,7 +49,7 @@ const UserPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/user/${editingUser.id}`,
+        `${server}/user/${editingUser.id}`,
         {
           method: "PATCH",
           credentials: "include",
@@ -81,7 +82,7 @@ const UserPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/user/${userToDelete.id}`,
+        `${server}/user/${userToDelete.id}`,
         {
           method: "DELETE",
           credentials: "include",

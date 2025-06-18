@@ -1,4 +1,6 @@
-const BASE_URL = "http://localhost:3000"; // Replace with your actual API base URL
+const server = import.meta.env.VITE_SERVER_URL;
+
+const BASE_URL = server;
 
 export const api = {
   // Room related endpoints
@@ -16,7 +18,7 @@ export const api = {
     if (!response.ok) {
       throw new Error("Failed to fetch room assets");
     }
-   
+
     return response.json();
   },
 
@@ -36,7 +38,7 @@ export const api = {
       throw new Error("Failed to fetch reports");
     }
     const data = response.json();
-    console.log('reports:', data);
+    console.log("reports:", data);
     return data;
   },
 

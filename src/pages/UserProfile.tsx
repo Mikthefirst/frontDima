@@ -5,6 +5,7 @@ import {
   Lock, 
   Save,
 } from 'lucide-react';
+const server = import.meta.env.VITE_SERVER_URL;
 
 const UserProfile: React.FC = () => {
   const [name, setName] = useState('');
@@ -18,7 +19,7 @@ const UserProfile: React.FC = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/user", {credentials: "include"});
+        const response = await fetch(`${server}/user`, {credentials: "include"});
         if (!response.ok) {
           throw new Error("Failed to fetch user data");
         }
@@ -43,7 +44,7 @@ const UserProfile: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`http://localhost:3000/user/${id}`, {
+      const response = await fetch(`${server}/user/${id}`, {
         method: "PUT",
         credentials: "include",
         headers: {
@@ -77,7 +78,7 @@ const UserProfile: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/user/change-password/${id}`,
+        `${server}/user/change-password/${id}`,
         {
           method: "POST",
           credentials: "include",

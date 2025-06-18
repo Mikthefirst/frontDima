@@ -1,8 +1,9 @@
 // api.ts
 import { Asset, Room } from "./types";
+const server = import.meta.env.VITE_SERVER_URL;
 
 export async function loadRooms(): Promise<Room[]> {
-  const res = await fetch("http://localhost:3000/room");
+  const res = await fetch(`${server}/room`);
   const data: Room[] = await res.json();
 
   // Добавляем координаты и размеры (простая сетка)
@@ -18,7 +19,7 @@ export async function loadRooms(): Promise<Room[]> {
 
 export async function loadRoomAssets(roomId: string): Promise<Asset[]> {
   const res = await fetch(
-    `http://localhost:3000/room/roomWithAssets/${roomId}`
+    `${server}/room/roomWithAssets/${roomId}`
   );
   return res.json();
 }

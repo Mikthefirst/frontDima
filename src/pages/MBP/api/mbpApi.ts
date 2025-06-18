@@ -1,6 +1,6 @@
 import { MBP, MBPToRoom, Room } from '../types';
-
-const API_BASE_URL = "http://localhost:3000"; // Replace with your actual API base URL
+const server = import.meta.env.VITE_SERVER_URL;
+const API_BASE_URL = server; 
 
 // MBP CRUD Operations
 export const fetchAllMBPs = async (): Promise<MBP[]> => {

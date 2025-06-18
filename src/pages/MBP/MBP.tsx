@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   Search,
   Plus,
-  Filter,
-  Download,
   Edit,
   Trash2,
   AlertTriangle,
@@ -142,16 +140,6 @@ function MBP_Page() {
               </select>
             </div>
 
-            <div className="flex space-x-2">
-              <button className="flex items-center bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">
-                <Filter className="mr-2 h-5 w-5" />
-                More Filters
-              </button>
-              <button className="flex items-center bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">
-                <Download className="mr-2 h-5 w-5" />
-                Export
-              </button>
-            </div>
           </div>
         </div>
 

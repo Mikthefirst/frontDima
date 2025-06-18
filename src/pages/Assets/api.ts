@@ -1,7 +1,8 @@
 import { Room } from "../MBP/types";
 import { Asset, AssetFormData } from "./types";
+const server = import.meta.env.VITE_SERVER_URL;
 
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = server;
 
 export const fetchAssets = async (): Promise<Asset[]> => {
   const response = await fetch(`${BASE_URL}/assets`);
