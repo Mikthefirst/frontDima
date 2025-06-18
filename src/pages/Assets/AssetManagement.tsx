@@ -2,16 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { 
   Search, 
   Plus, 
-  Filter, 
-  Download, 
   Edit, 
   Trash2,
   X,
-  Upload,
   AlertTriangle
 } from 'lucide-react';
 import { Asset, AssetFormData,  } from './types';
-import { addAsset, fetchAllRooms, fetchAssets } from './api';
+import { addAsset, deleteAsset, fetchAllRooms, fetchAssets, updateAsset } from './api';
 import { Room } from '../MBP/types';
 
 
@@ -46,16 +43,12 @@ const AssetManagement: React.FC = () => {
   // Filter assets based on search and filter criteria
   const filteredAssets = assets.filter((asset) => {
     const matchesSearch =
-      asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      asset.inventoryNo.toString().includes(searchTerm);
-
-    const matchesRoom = filterRoom === "" || asset.location === filterRoom;
+      asset.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesRoom = filterRoom === "" || asset.room.name === filterRoom;
 
     return matchesSearch && matchesRoom;
   });
   
-
-  // Get unique values for filter dropdowns
   const uniqueRooms = rooms.map((room) => room.name);
 
   // Handle edit button click
@@ -88,9 +81,23 @@ const AssetManagement: React.FC = () => {
 
     try {
       if (isEditMode && currentAsset) {
-        // TODO: Добавить update через fetch (PUT)
+
+
+        const updatedAsset = await updateAsset(currentAsset.id, {
+          name: formData.name || "",
+          room_id: formData.room_id || rooms[0]?.id || "",
+          depreciation: formData.depreciation || 0,
+          acquisitionDate:
+            formData.acquisitionDate || new Date().toISOString().split("T")[0],
+          x: formData.x ?? 0,
+          y: formData.y ?? 0,
+          width: formData.width ?? 0.1,
+          height: formData.height ?? 0.1,
+          value: formData.value ?? 0,
+        });
+
         const updatedAssets = assets.map((asset) =>
-          asset.id === currentAsset.id ? { ...asset, ...formData } : asset
+          asset.id === updatedAsset.id ? updatedAsset : asset
         );
         setAssets(updatedAssets);
         showNotification(
@@ -99,18 +106,16 @@ const AssetManagement: React.FC = () => {
         );
       } else {
         const newAsset = await addAsset({
-          inventoryNo: 0,
           name: formData.name || "",
-          location: formData.location || "",
-          depreciation: formData.depreciation || "0.00",
-          purchaseDate:
-            formData.purchaseDate || new Date().toISOString().split("T")[0],
-          value: formData.value || 0,
-          description: formData.description || "",
-          x: formData.x || 0,
-          y: formData.y || 0,
-          width: formData.width || 0.1,
-          height: formData.height || 0.1,
+          room_id: formData.room_id || rooms[0]?.id || "",
+          depreciation: formData.depreciation || 0,
+          acquisitionDate:
+            formData.acquisitionDate || new Date().toISOString().split("T")[0],
+          x: formData.x ?? 0,
+          y: formData.y ?? 0,
+          width: formData.width ?? 0.1,
+          height: formData.height ?? 0.1,
+          value: formData.value
         });
 
         setAssets([...assets, newAsset]);
@@ -132,10 +137,12 @@ const AssetManagement: React.FC = () => {
   
 
   // Handle asset deletion confirmation
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!assetToDelete) return;
     
     try {
+      await deleteAsset(assetToDelete.id);
+
       const updatedAssets = assets.filter(asset => asset.id !== assetToDelete.id);
       setAssets(updatedAssets);
       setIsDeleteModalOpen(false);
@@ -228,17 +235,6 @@ const AssetManagement: React.FC = () => {
               ))}
             </select>
           </div>
-
-          <div className="flex space-x-2">
-            <button className="flex items-center bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">
-              <Filter className="mr-2 h-5 w-5" />
-              More Filters
-            </button>
-            <button className="flex items-center bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">
-              <Download className="mr-2 h-5 w-5" />
-              Export
-            </button>
-          </div>
         </div>
       </div>
 
@@ -249,16 +245,10 @@ const AssetManagement: React.FC = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Inventory No.
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Name
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Location
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Responsible Person
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Purchase Date
@@ -270,6 +260,18 @@ const AssetManagement: React.FC = () => {
                   Depreciation
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  X:
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Y:
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Ширина:
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Высота:
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -277,24 +279,32 @@ const AssetManagement: React.FC = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredAssets.map((asset) => (
                 <tr key={asset.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#2A5F7F]">
-                    {asset.inventoryNo}
-                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {asset.name}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {asset.location}
-                  </td>
-
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {asset.purchaseDate}
+                    {asset.room.name}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    ${asset.value.toFixed(2)}
+                    {asset.acquisitionDate}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    ${asset.value}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {asset.depreciation}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {asset.x}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {asset.y}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {asset.width}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {asset.height}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <div className="flex space-x-3">
@@ -366,22 +376,22 @@ const AssetManagement: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label
-                      htmlFor="location"
+                      htmlFor="room_id"
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
                       Location
                     </label>
                     <select
-                      id="location"
+                      id="room_id"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
-                      value={formData.location || ""}
+                      value={formData.room_id || ""}
                       onChange={handleInputChange}
                       required
                     >
                       <option value="">Select a room</option>
-                      {uniqueRooms.map((room) => (
-                        <option key={room} value={room}>
-                          {room}
+                      {rooms.map((room) => (
+                        <option key={room.id} value={room.id}>
+                          {room.name}
                         </option>
                       ))}
                     </select>
@@ -462,16 +472,16 @@ const AssetManagement: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label
-                      htmlFor="purchaseDate"
+                      htmlFor="acquisitionDate"
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
                       Purchase Date
                     </label>
                     <input
                       type="date"
-                      id="purchaseDate"
+                      id="acquisitionDate"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
-                      value={formData.purchaseDate || ""}
+                      value={formData.acquisitionDate || ""}
                       onChange={handleInputChange}
                       required
                     />
@@ -511,67 +521,6 @@ const AssetManagement: React.FC = () => {
                       onChange={handleInputChange}
                       required
                     />
-                  </div>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="description"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Description
-                  </label>
-                  <textarea
-                    id="description"
-                    rows={3}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
-                    placeholder="Enter asset description..."
-                    value={formData.description || ""}
-                    onChange={handleInputChange}
-                  ></textarea>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Asset Image
-                  </label>
-                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                    <div className="space-y-1 text-center">
-                      <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                      <div className="flex text-sm text-gray-600">
-                        <label
-                          htmlFor="file-upload"
-                          className="relative cursor-pointer bg-white rounded-md font-medium text-[#2A5F7F] hover:text-[#1e4b63]"
-                        >
-                          <span>Upload a file</span>
-                          <input
-                            id="file-upload"
-                            name="file-upload"
-                            type="file"
-                            className="sr-only"
-                            accept="image/*"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  file,
-                                }));
-                              }
-                            }}
-                          />
-                        </label>
-                        <p className="pl-1">or drag and drop</p>
-                      </div>
-                      <p className="text-xs text-gray-500">
-                        PNG, JPG, GIF up to 10MB
-                      </p>
-                      {formData.file && (
-                        <p className="text-xs text-green-600">
-                          Selected file: {formData.file.name}
-                        </p>
-                      )}
-                    </div>
                   </div>
                 </div>
 

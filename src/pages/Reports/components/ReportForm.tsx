@@ -235,51 +235,6 @@ const ReportForm: React.FC<ReportFormProps> = ({ onReportCreated }) => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label
-              htmlFor="mbp"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              MBP
-            </label>
-            <select
-              id="mbp"
-              value={mbpId}
-              onChange={(e) => setMbpId(e.target.value)}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
-              disabled={isSubmitting || loading || !roomId || mbps.length === 0}
-            >
-              <option value="">Select MBP</option>
-              {mbps.map((mbp) => (
-                <option key={mbp.id} value={mbp.id}>
-                  {mbp.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label
-              htmlFor="urgency"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Urgency
-            </label>
-            <select
-              id="urgency"
-              value={urgency}
-              onChange={(e) => setUrgency(e.target.value as UrgencyLevel)}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
-              disabled={isSubmitting}
-            >
-              <option value="low">low</option>
-              <option value="medium">medium</option>
-              <option value="high">high</option>
-            </select>
-          </div>
-        </div>
-
         <div className="flex justify-end pt-2">
           <button
             type="submit"

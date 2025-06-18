@@ -93,7 +93,7 @@ export const FloorPlan: React.FC<FloorPlanProps> = ({
         id: a.id,
         name: a.name,
         count: 1,
-        price: parseFloat(a.depreciation),
+        price: a.value,
         imageUrl: a.image_url,
         x: a.x,
         y: a.y,
@@ -209,10 +209,17 @@ export const FloorPlan: React.FC<FloorPlanProps> = ({
 
               {zoomedRoom &&
                 room.items.map((item, i) => {
-                  const ax = rx + (item.x || 0) * rw;
-                  const ay = ry + (item.y || 0) * rh;
-                  const aw = (item.width || 0.1) * rw;
-                  const ah = (item.height || 0.1) * rh;
+                  // Парсим в числа
+                  const itemX = Number(item.x) || 0;
+                  const itemY = Number(item.y) || 0;
+                  const itemW = Number(item.width) || 10;
+                  const itemH = Number(item.height) || 10;
+
+                  // Позиция объекта — смещение от левого верхнего угла комнаты
+                  const ax = rx + itemX;
+                  const ay = ry + itemY;
+                  const aw = itemW;
+                  const ah = itemH;
 
                   const hasImage = !!item.imageUrl;
 
@@ -269,14 +276,10 @@ export const FloorPlan: React.FC<FloorPlanProps> = ({
           <ul>
             {selected.room.items.map((item) => (
               <li key={item.id} className="tooltip-item">
-                <img
-                  src={item.imageUrl ? item.imageUrl : undefined}
-                  alt={item.name}
-                />
                 <div className="tooltipText">
                   <strong>{item.name}</strong>
                   <div>Кол-во: {item.count}</div>
-                  <div>Цена: {item.price} руб.</div>
+                  <div>Цена: {item.price}$.</div>
                 </div>
               </li>
             ))}

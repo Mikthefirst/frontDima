@@ -1,35 +1,20 @@
 export interface Asset {
+  value: number; // ← добавлено поле стоимости
   id: string;
-  inventoryNo: number;
   name: string;
-  location: string; 
-  depreciation: string;
-  purchaseDate: string;
-  value: number;
-  description?: string;
+  room: Room; // Было location: string
+  depreciation: number; // Было string
+  acquisitionDate: string; // Было purchaseDate
   x: number;
   y: number;
   width: number;
   height: number;
 }
-export interface AssetFormData extends Partial<Asset> {
-  file?: File;
-}
 
-export interface RawAsset {
-  id: string;
-  inventory_number: number;
-  name: string;
-  room: Room;
-  depreciation: string | number;
-  acquisitionDate: string;
-  image_url?: string;
-  x: string | number;
-  y: string | number;
-  width: string | number;
-  height: string | number;
+export interface AssetFormData extends Partial<Asset> {
+  // file?: File; // удалено, так как загрузка файлов больше не используется
+  room_id?: string; // id комнаты, передаётся на backend
 }
-  
 
 interface Room {
   id: string;

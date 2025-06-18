@@ -25,13 +25,13 @@ export interface Room {
 export interface Asset {
   id: string;
   name: string;
-  inventory_number: number;
   room_id: string;
   depreciation: string; // в виде строки
   acquisitionDate: string;
   image_url: string | null;
   width: number;
   height: number;
+  value: number;
   x: number;
   y: number;
 }

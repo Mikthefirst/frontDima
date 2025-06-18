@@ -1,92 +1,19 @@
 import { Room } from "../MBP/types";
-import { Asset, RawAsset } from "./types";
+import { Asset, AssetFormData } from "./types";
 
 const BASE_URL = "http://localhost:3000";
 
 export const fetchAssets = async (): Promise<Asset[]> => {
   const response = await fetch(`${BASE_URL}/assets`);
-
   if (!response.ok) {
     throw new Error(`Failed to fetch assets: ${response.statusText}`);
   }
 
-  const rawAssets: RawAsset[] = await response.json();
-  console.log(rawAssets);
-
-  const data =  rawAssets.map((item) => ({
-    id: item.id,
-    inventoryNo: item.inventory_number,
-    name: item.name,
-    location: item.room.name,
-    depreciation: Number(item.depreciation).toFixed(2),
-    purchaseDate: new Date(item.acquisitionDate).toISOString().split("T")[0],
-    value: 0,
-    description: item.image_url ?? "",
-    x: parseFloat(item.x as string),
-    y: parseFloat(item.y as string),
-    width: parseFloat(item.width as string),
-    height: parseFloat(item.height as string),
-  }));
-
-  console.log(data)
+  const data: Asset[] = await response.json();
+  console.log("assets that arrived: ",data)
   return data;
 };
 
-
-export const addAsset = async (
-  assetData: Omit<
-    Asset,
-    "id" | "depreciation" | "purchaseDate" | "description"
-  > & {
-    depreciation: string | number;
-    purchaseDate: string;
-    description: string;
-    file?: File; // ⬅️ добавлено сюда
-  }
-): Promise<Asset> => {
-  const formData = new FormData();
-  formData.append("name", assetData.name);
-  formData.append("room_id", assetData.location);
-  formData.append("depreciation", assetData.depreciation.toString());
-  formData.append("acquisitionDate", assetData.purchaseDate);
-  formData.append("value", assetData.value.toString());
-  formData.append("description", assetData.description || "");
-  formData.append("x", assetData.x.toString());
-  formData.append("y", assetData.y.toString());
-  formData.append("width", assetData.width.toString());
-  formData.append("height", assetData.height.toString());
-  if (assetData.file) {
-    formData.append("image", assetData.file); // File является Blob
-  }
-  const response = await fetch(`${BASE_URL}/assets`, {
-    method: "POST",
-    credentials: "include",
-    body: formData,
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to add asset: ${response.statusText}`);
-  }
-
-  const savedAsset = await response.json();
-
-  return {
-    id: savedAsset.id,
-    inventoryNo: savedAsset.inventory_number,
-    name: savedAsset.name,
-    location: savedAsset.room.name,
-    depreciation: savedAsset.depreciation.toFixed(2),
-    purchaseDate: new Date(savedAsset.acquisitionDate)
-      .toISOString()
-      .split("T")[0],
-    value: savedAsset.value || 0,
-    description: savedAsset.image_url || "",
-    x: savedAsset.x,
-    y: savedAsset.y,
-    width: savedAsset.width,
-    height: savedAsset.height,
-  };
-};
 
 
 export const fetchAllRooms = async (): Promise<Room[]> => {
@@ -100,4 +27,58 @@ export const fetchAllRooms = async (): Promise<Room[]> => {
   }
 };
 
+export const addAsset = async (data: AssetFormData): Promise<Asset> => {
+  try {
+    console.log("add asset data: ", data)
+    const response = await fetch(`${BASE_URL}/assets`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to create asset: ${errorText}`);
+    }
+
+    const createdAsset = await response.json();
+    return createdAsset;
+  } catch (error) {
+    console.error("Error creating asset:", error);
+    throw error;
+  }
+};
+
+export const updateAsset = async (
+  id: string,
+  updatedData: AssetFormData
+): Promise<Asset> => {
+  console.log('updatedData:', updatedData);
+  const res = await fetch(`${BASE_URL}/assets/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(updatedData),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to update asset");
+  }
+
+  return await res.json();
+};
+
+
+export const deleteAsset = async (id: string): Promise<void> => {
+  const response = await fetch(`${BASE_URL}/assets/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to delete asset: ${response.statusText}`);
+  }
+};
 
