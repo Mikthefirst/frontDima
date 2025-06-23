@@ -19,7 +19,7 @@ const UserProfile: React.FC = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`${server}/user`, {credentials: "include"});
+        const response = await fetch(`${server}/user/get-data`, {credentials: "include"});
         if (!response.ok) {
           throw new Error("Failed to fetch user data");
         }
