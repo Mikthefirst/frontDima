@@ -74,7 +74,7 @@ const AddMBPModal: React.FC<AddMBPModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Add New MBP"
+      title="Добавить МОЛ"
       maxWidth="max-w-lg"
     >
       {error && (
@@ -86,7 +86,7 @@ const AddMBPModal: React.FC<AddMBPModalProps> = ({
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Name *
+            Название *
           </label>
           <input
             type="text"
@@ -100,7 +100,7 @@ const AddMBPModal: React.FC<AddMBPModalProps> = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Category *
+            Категория *
           </label>
           <select
             name="category"
@@ -121,7 +121,7 @@ const AddMBPModal: React.FC<AddMBPModalProps> = ({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Overall Quantity *
+              Количество *
             </label>
             <input
               type="number"
@@ -136,7 +136,7 @@ const AddMBPModal: React.FC<AddMBPModalProps> = ({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Minimum Quantity *
+              Минимальное Количество *
             </label>
             <input
               type="number"
@@ -152,7 +152,7 @@ const AddMBPModal: React.FC<AddMBPModalProps> = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Expiry Date
+            Срок истечения годности
           </label>
           <input
             type="date"
@@ -170,7 +170,7 @@ const AddMBPModal: React.FC<AddMBPModalProps> = ({
             className="bg-white text-gray-700 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 transition-colors"
             disabled={loading}
           >
-            Cancel
+            Отмена
           </button>
           <button
             type="submit"

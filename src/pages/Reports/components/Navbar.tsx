@@ -8,7 +8,9 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <AlertTriangle className="h-8 w-8 mr-2" />
-            <span className="font-bold text-xl">Maintenance Reporting</span>
+            <span className="font-bold text-xl">
+              Тех Отчетность 
+            </span>
           </div>
           <div className="flex items-center space-x-4">
             <button className="bg-white text-[#2A5F7F] px-3 py-1 rounded-md flex items-center text-sm hover:bg-gray-100 transition-colors">

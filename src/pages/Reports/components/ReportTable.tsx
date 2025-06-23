@@ -66,9 +66,9 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onReportClosed, load
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200">
-        <h2 className="text-xl font-semibold text-gray-800">Maintenance Reports</h2>
+        <h2 className="text-xl font-semibold text-gray-800">Тех Отчеты</h2>
       </div>
-      
+
       <div className="overflow-x-auto">
         {loading ? (
           <div className="p-8 text-center">
@@ -83,38 +83,68 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onReportClosed, load
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Reason
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Description
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Urgency
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Status
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Created Date
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Room
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Asset
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   MBP
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Action
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {reports.map((report) => (
-                <tr key={report.id} className="hover:bg-gray-50 transition-colors">
+                <tr
+                  key={report.id}
+                  className="hover:bg-gray-50 transition-colors"
+                >
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {report.reason}
                   </td>
@@ -131,22 +161,24 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onReportClosed, load
                     {formatDate(report.createdAt)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {report.room?.name || '-'}
+                    {report.room?.name || "-"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {report.asset?.name || '-'}
+                    {report.asset?.name || "-"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {report.mbp?.name || '-'}
+                    {report.mbp?.name || "-"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    {report.status !== 'CLOSED' ? (
+                    {report.status !== "CLOSED" ? (
                       <button
                         onClick={() => handleCloseReport(report.id)}
                         disabled={closingReportId === report.id}
                         className="text-[#2A5F7F] hover:text-[#1e4b63] font-medium disabled:text-gray-400 disabled:cursor-not-allowed"
                       >
-                        {closingReportId === report.id ? 'Closing...' : 'Close Report'}
+                        {closingReportId === report.id
+                          ? "Closing..."
+                          : "Close Report"}
                       </button>
                     ) : (
                       <span className="text-gray-400">Closed</span>

@@ -75,7 +75,7 @@ const AssignMBPModal: React.FC<AssignMBPModalProps> = ({ isOpen, onClose, onSucc
     <Modal 
       isOpen={isOpen} 
       onClose={onClose} 
-      title="Assign MBP to Room"
+      title="Назначить МОЛ комнате"
       maxWidth="max-w-lg"
     >
       {loading && !error && (
@@ -99,7 +99,7 @@ const AssignMBPModal: React.FC<AssignMBPModalProps> = ({ isOpen, onClose, onSucc
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Select MBP
+                Выбрать МОЛ
               </label>
               <select
                 value={selectedMbpId}
@@ -120,7 +120,7 @@ const AssignMBPModal: React.FC<AssignMBPModalProps> = ({ isOpen, onClose, onSucc
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Select Room
+                Выбрать комнату
               </label>
               <select
                 value={selectedRoomId}
@@ -141,7 +141,7 @@ const AssignMBPModal: React.FC<AssignMBPModalProps> = ({ isOpen, onClose, onSucc
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Quantity
+                Количество
               </label>
               <input
                 type="number"
@@ -154,7 +154,7 @@ const AssignMBPModal: React.FC<AssignMBPModalProps> = ({ isOpen, onClose, onSucc
               />
               {selectedMbp && (
                 <p className="mt-1 text-sm text-gray-500">
-                  Available: {selectedMbp.overallQuantity}
+                  Доступно: {selectedMbp.overallQuantity}
                 </p>
               )}
             </div>
@@ -166,14 +166,14 @@ const AssignMBPModal: React.FC<AssignMBPModalProps> = ({ isOpen, onClose, onSucc
                 className="bg-white text-gray-700 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 transition-colors"
                 disabled={loading}
               >
-                Cancel
+                Отменить
               </button>
               <button
                 type="submit"
                 className="bg-[#2A5F7F] text-white px-4 py-2 rounded-md hover:bg-[#1e4b63] transition-colors disabled:bg-gray-400"
                 disabled={loading || !selectedMbpId || !selectedRoomId || quantity <= 0}
               >
-                Assign
+                Назначить
               </button>
             </div>
           </div>

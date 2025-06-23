@@ -51,9 +51,9 @@ export default function MainApp() {
       <div className="hidden md:flex md:flex-col md:w-64 bg-white shadow-md">
         <div className="p-4 border-b border-gray-200">
           <h1 className="text-xl font-semibold text-[#2A5F7F]">
-            Asset Manager
+            Система Инвентаризации
           </h1>
-          <p className="text-sm text-gray-500">College Admin System</p>
+          <p className="text-sm text-gray-500">Система управления колледжем</p>
         </div>
         <nav className="flex-1 overflow-y-auto p-4">
           <ul className="space-y-2">
@@ -67,7 +67,7 @@ export default function MainApp() {
                 }`}
               >
                 <BarChart3 className="mr-3 h-5 w-5" />
-                Dashboard
+                Дашборд
               </button>
             </li>
             <li>
@@ -80,7 +80,7 @@ export default function MainApp() {
                 }`}
               >
                 <Building className="mr-3 h-5 w-5" />
-                Asset Management
+                 Активы
               </button>
             </li>
             <li>
@@ -93,7 +93,7 @@ export default function MainApp() {
                 }`}
               >
                 <Package className="mr-3 h-5 w-5" />
-                MBP Section
+                МОЛ Секция
               </button>
             </li>
             <li>
@@ -106,7 +106,7 @@ export default function MainApp() {
                 }`}
               >
                 <FileText className="mr-3 h-5 w-5" />
-                Reports
+                Отчеты
               </button>
             </li>
             <li>
@@ -119,7 +119,7 @@ export default function MainApp() {
                 }`}
               >
                 <User className="mr-3 h-5 w-5" />
-                User Profile
+                Профиль
               </button>
             </li>
             <li>
@@ -132,7 +132,7 @@ export default function MainApp() {
                 }`}
               >
                 <Settings className="mr-3 h-5 w-5" />
-                Admin Panel
+                Админ-Панель 
               </button>
             </li>
             <li>
@@ -145,7 +145,7 @@ export default function MainApp() {
                 }`}
               >
                 <Settings className="mr-3 h-5 w-5" />
-                Display Rooms
+                Комнаты
               </button>
             </li>
           </ul>
@@ -156,7 +156,7 @@ export default function MainApp() {
             className="flex items-center w-full p-3 rounded-lg hover:bg-gray-100 transition-colors"
           >
             <LogOut className="mr-3 h-5 w-5" />
-            Logout
+            Выйти
           </button>
         </div>
       </div>

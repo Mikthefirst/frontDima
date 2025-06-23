@@ -135,7 +135,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onReportCreated }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold text-gray-800 mb-4">
-        New Maintenance Report
+        Новый отчет по техническому обслуживанию{" "}
       </h2>
 
       {formError && (
@@ -150,7 +150,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onReportCreated }) => {
             htmlFor="reason"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Reason
+            Причина
           </label>
           <input
             type="text"
@@ -168,7 +168,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onReportCreated }) => {
             htmlFor="description"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Detailed Description
+            Детальное описание
           </label>
           <textarea
             id="description"
@@ -187,7 +187,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onReportCreated }) => {
               htmlFor="room"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Room
+              Комната
             </label>
             <select
               id="room"
@@ -200,7 +200,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onReportCreated }) => {
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
               disabled={isSubmitting || loading || rooms.length === 0}
             >
-              <option value="">Select Room</option>
+              <option value="">Выбрать Комнату</option>
               {rooms.map((room) => (
                 <option key={room.id} value={room.id}>
                   {room.name}
@@ -214,7 +214,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onReportCreated }) => {
               htmlFor="asset"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Asset
+              Актив
             </label>
             <select
               id="asset"
@@ -225,7 +225,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onReportCreated }) => {
                 isSubmitting || loading || !roomId || assets.length === 0
               }
             >
-              <option value="">Select Asset</option>
+              <option value="">Выбрать актив</option>
               {assets.map((asset) => (
                 <option key={asset.id} value={asset.id}>
                   {asset.name}

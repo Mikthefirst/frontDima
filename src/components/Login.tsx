@@ -62,10 +62,10 @@ const Login: React.FC<LoginProps> = ({ onLogin, }) => {
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="bg-[#2A5F7F] py-4">
           <h2 className="text-center text-2xl font-bold text-white">
-            Asset Management System
+            Система Инвентаризации
           </h2>
           <p className="text-center text-white text-sm">
-            College Administration
+            Система управления колледжем
           </p>
         </div>
         <div className="p-8">
@@ -75,7 +75,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, }) => {
                 htmlFor="username"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Username / Email
+                Почта
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -98,11 +98,8 @@ const Login: React.FC<LoginProps> = ({ onLogin, }) => {
                   htmlFor="password"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Password
+                  Пароль
                 </label>
-                <a href="#" className="text-sm text-[#2A5F7F] hover:underline">
-                  Forgot Password?
-                </a>
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -138,12 +135,12 @@ const Login: React.FC<LoginProps> = ({ onLogin, }) => {
             </button>
             <div className="text-center mt-4">
               <p className="text-sm text-gray-600">
-                Don't have an account?{" "}
+                Нет аккаунта?{" "}
                 <button
                   onClick={() => navigate("/reg")}
                   className="text-[#2A5F7F] hover:text-[#1e4b63] font-medium"
                 >
-                  Register now
+                  Зарегайтесь тут
                 </button>
               </p>
             </div>

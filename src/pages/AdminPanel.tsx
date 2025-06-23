@@ -20,7 +20,7 @@ const AdminPanel: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-800">Admin Panel</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Панель администратора</h1>
       </div>
 
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -35,7 +35,7 @@ const AdminPanel: React.FC = () => {
               }`}
             >
               <Users className="mr-2 h-5 w-5" />
-              User Management
+              Пользователи
             </button>
           </nav>
         </div>

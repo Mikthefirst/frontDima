@@ -110,19 +110,24 @@ const UserProfile: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-800">User Profile</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Профиль</h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Profile Information */}
         <div className="md:col-span-2 space-y-6">
           <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Profile Information</h2>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              Информация
+            </h2>
             <form onSubmit={handleSaveProfile}>
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                    Full Name
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Полное имя:
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -138,8 +143,11 @@ const UserProfile: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Email
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -155,8 +163,11 @@ const UserProfile: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
-                    Role
+                  <label
+                    htmlFor="role"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Роль
                   </label>
                   <input
                     type="text"
@@ -165,7 +176,9 @@ const UserProfile: React.FC = () => {
                     disabled
                     className="block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm py-2 px-3 border text-gray-500"
                   />
-                  <p className="mt-1 text-xs text-gray-500">Role cant be changed.</p>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Role cant be changed.
+                  </p>
                 </div>
                 <div className="pt-2">
                   <button
@@ -173,7 +186,7 @@ const UserProfile: React.FC = () => {
                     className="flex items-center bg-[#2A5F7F] text-white px-4 py-2 rounded-md hover:bg-[#1e4b63] transition-colors"
                   >
                     <Save className="mr-2 h-5 w-5" />
-                    Save Changes
+                    Сохранить
                   </button>
                 </div>
               </div>
@@ -181,12 +194,17 @@ const UserProfile: React.FC = () => {
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Change Password</h2>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              Поменять пароль
+            </h2>
             <form onSubmit={handleChangePassword}>
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                    Current Password
+                  <label
+                    htmlFor="currentPassword"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Текущий
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -202,8 +220,11 @@ const UserProfile: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                    New Password
+                  <label
+                    htmlFor="newPassword"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Новый
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -219,8 +240,11 @@ const UserProfile: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                    Confirm New Password
+                  <label
+                    htmlFor="confirmPassword"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Подтвердить новый пароль
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -241,7 +265,7 @@ const UserProfile: React.FC = () => {
                     className="flex items-center bg-[#2A5F7F] text-white px-4 py-2 rounded-md hover:bg-[#1e4b63] transition-colors"
                   >
                     <Save className="mr-2 h-5 w-5" />
-                    Change Password
+                    Поменять пароль
                   </button>
                 </div>
               </div>
@@ -252,28 +276,28 @@ const UserProfile: React.FC = () => {
         {/* User Stats and Activity Log */}
         <div className="space-y-6">
           <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">User Statistics</h2>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              Статистика пользователей
+            </h2>
             <div className="space-y-4">
               <div className="flex justify-between">
-                <span className="text-gray-600">Assets Added</span>
+                <span className="text-gray-600">Добавленные активы</span>
                 <span className="font-medium">24</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Reports Generated</span>
+                <span className="text-gray-600">Сгенерированные репорты</span>
                 <span className="font-medium">12</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">MBP Updates</span>
+                <span className="text-gray-600">обновления МОЛ</span>
                 <span className="font-medium">8</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Last Login</span>
-                <span className="font-medium">Today, 08:45 AM</span>
+                <span className="text-gray-600">Последний логин</span>
+                <span className="font-medium">Сегодня, 08:45 AM</span>
               </div>
             </div>
           </div>
-
-
         </div>
       </div>
     </div>

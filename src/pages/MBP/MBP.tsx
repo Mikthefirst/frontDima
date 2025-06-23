@@ -90,21 +90,21 @@ function MBP_Page() {
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-800">MBP Management</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Управление МОЛ</h1>
           <div className="flex space-x-2">
             <button
               className="flex items-center bg-[#2A5F7F] text-white px-4 py-2 rounded-md hover:bg-[#1e4b63] transition-colors"
               onClick={() => setIsAssignModalOpen(true)}
             >
               <PlusCircle className="mr-2 h-5 w-5" />
-              Assign to Room
+              Назначить комнате
             </button>
             <button
               className="flex items-center bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors"
               onClick={() => setIsAddMBPModalOpen(true)}
             >
               <Plus className="mr-2 h-5 w-5" />
-              Add MBP
+              Добавить МОЛ
             </button>
           </div>
         </div>
@@ -131,7 +131,7 @@ function MBP_Page() {
                 onChange={(e) => setFilterCategory(e.target.value)}
                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
               >
-                <option value="">Filter by Category</option>
+                <option value="">Фильтр по категории</option>
                 {uniqueCategories.map((category) => (
                   <option key={category} value={category}>
                     {category}
@@ -139,7 +139,6 @@ function MBP_Page() {
                 ))}
               </select>
             </div>
-
           </div>
         </div>
 
@@ -152,10 +151,10 @@ function MBP_Page() {
               </div>
               <div className="ml-3">
                 <p className="text-sm text-amber-700">
-                  <span className="font-medium">Low Stock Alert:</span>{" "}
+                  <span className="font-medium">Низкий уровень запасов:</span>{" "}
                   {lowStockCount}{" "}
-                  {lowStockCount === 1 ? "item is" : "items are"} below the
-                  minimum threshold.
+                  {lowStockCount === 1 ? "item is" : "items are"} ниже
+                  минимального порога.
                 </p>
               </div>
             </div>
@@ -190,22 +189,22 @@ function MBP_Page() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Name
+                      Название
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Category
+                      Категория
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Quantity
+                      Количество
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Expiry Date
+                      Дата истечения
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
+                      Статус
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
+                      Действия
                     </th>
                   </tr>
                 </thead>
@@ -248,11 +247,11 @@ function MBP_Page() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           {isLowStock(item) ? (
                             <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                              Low Stock
+                              Низкое Количество
                             </span>
                           ) : (
                             <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                              In Stock
+                              Все ок
                             </span>
                           )}
                         </td>
@@ -283,14 +282,14 @@ function MBP_Page() {
         {/* Usage Statistics */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-lg font-semibold text-gray-700 mb-4">
-            Monthly Usage Statistics
+            Ежемесячная статистика использования{" "}
           </h3>
           <div className="h-64 flex items-center justify-center">
             <div className="w-full h-full bg-gray-100 rounded-lg flex items-center justify-center">
               <div className="space-y-4 w-full px-4">
                 <div>
                   <div className="flex justify-between text-sm text-gray-600 mb-1">
-                    <span>Office Supplies</span>
+                    <span>Офисные</span>
                     <span>100%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
@@ -302,7 +301,7 @@ function MBP_Page() {
                 </div>
                 <div>
                   <div className="flex justify-between text-sm text-gray-600 mb-1">
-                    <span>Lab Equipment</span>
+                    <span>Лабораторное оборудование</span>
                     <span>0%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
@@ -314,7 +313,7 @@ function MBP_Page() {
                 </div>
                 <div>
                   <div className="flex justify-between text-sm text-gray-600 mb-1">
-                    <span>Health & Safety</span>
+                    <span>Здоровье</span>
                     <span>0%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2.5">

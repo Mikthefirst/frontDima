@@ -68,7 +68,7 @@ const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="bg-[#2A5F7F] py-4">
           <h2 className="text-center text-2xl font-bold text-white">
-            Create Account
+            Создать аккаунт
           </h2>
           <p className="text-center text-white text-sm">
             College Administration
@@ -128,7 +128,7 @@ const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
                   htmlFor="full_name"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Full Name
+                  Полное имя
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -151,7 +151,7 @@ const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
                   htmlFor="role"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Role
+                  Роль
                 </label>
                 <select
                   id="role"
@@ -172,7 +172,7 @@ const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
                   htmlFor="password"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Password
+                  Пароль
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -195,7 +195,7 @@ const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
                   htmlFor="confirmPassword"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Confirm Password
+                  Подтвердить пароль
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -218,19 +218,19 @@ const Registration: React.FC<RegistrationProps> = ({ onLogin }) => {
                   type="submit"
                   className="w-full bg-[#2A5F7F] text-white py-2 px-4 rounded-md hover:bg-[#1e4b63] focus:outline-none focus:ring-2 focus:ring-[#2A5F7F] focus:ring-opacity-50 transition-colors"
                 >
-                  Create Account
+                  Создать аккаунт
                 </button>
               </div>
 
               <div className="text-center mt-4">
                 <p className="text-sm text-gray-600">
-                  Already have an account?{" "}
+                  Уже есть аккаунт?{" "}
                   <a
                     href="#"
                     onClick={() => navigate("/login")}
                     className="text-[#2A5F7F] hover:text-[#1e4b63] font-medium"
                   >
-                    Sign in
+                    Войти
                   </a>
                 </p>
               </div>

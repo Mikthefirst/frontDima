@@ -201,7 +201,7 @@ const AssetManagement: React.FC = () => {
           className="flex items-center bg-[#2A5F7F] text-white px-4 py-2 rounded-md hover:bg-[#1e4b63] transition-colors duration-300 transform hover:scale-105"
         >
           <Plus className="mr-2 h-5 w-5" />
-          Add Asset
+          Добавить актив
         </button>
       </div>
 
@@ -227,7 +227,7 @@ const AssetManagement: React.FC = () => {
               onChange={(e) => setFilterRoom(e.target.value)}
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2A5F7F] focus:ring focus:ring-[#2A5F7F] focus:ring-opacity-50 py-2 px-3 border"
             >
-              <option value="">Filter by Room</option>
+              <option value="">Фильтровать по комнате</option>
               {uniqueRooms.map((room) => (
                 <option key={room} value={room}>
                   {room}
@@ -245,19 +245,19 @@ const AssetManagement: React.FC = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
+                  Название
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Location
+                  Место
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Purchase Date
+                  Дата добавления
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Value
+                  Цена
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Depreciation
+                  Амортизация
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   X:
@@ -272,7 +272,7 @@ const AssetManagement: React.FC = () => {
                   Высота:
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
+                  Действия
                 </th>
               </tr>
             </thead>
@@ -359,7 +359,7 @@ const AssetManagement: React.FC = () => {
                       htmlFor="name"
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
-                      Asset Name
+                      Название
                     </label>
                     <input
                       type="text"
@@ -379,7 +379,7 @@ const AssetManagement: React.FC = () => {
                       htmlFor="room_id"
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
-                      Location
+                      Место
                     </label>
                     <select
                       id="room_id"
@@ -438,7 +438,7 @@ const AssetManagement: React.FC = () => {
                       htmlFor="width"
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
-                      Width
+                      Ширина
                     </label>
                     <input
                       type="number"
@@ -455,7 +455,7 @@ const AssetManagement: React.FC = () => {
                       htmlFor="height"
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
-                      Height
+                      Место
                     </label>
                     <input
                       type="number"
@@ -475,7 +475,7 @@ const AssetManagement: React.FC = () => {
                       htmlFor="acquisitionDate"
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
-                      Purchase Date
+                      Дата добавления
                     </label>
                     <input
                       type="date"
@@ -491,7 +491,7 @@ const AssetManagement: React.FC = () => {
                       htmlFor="value"
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
-                      Value ($)
+                      Цена ($)
                     </label>
                     <input
                       type="number"
@@ -510,7 +510,7 @@ const AssetManagement: React.FC = () => {
                       htmlFor="depreciation"
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
-                      Depreciation (%)
+                      Амортизация (%)
                     </label>
                     <input
                       type="text"
